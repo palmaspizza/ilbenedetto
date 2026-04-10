@@ -1,0 +1,5247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IL Benedetto | Estudio Musical</title>
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/Gv4Fw2NH/logobenedetto.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --fuxia: #003cff;
+            --fuxia-dark: #000875;
+            --verde: #702f2f;
+            --verde-glow: #ff0000;
+            --amarillo: #ffc400;
+            --amarillo-glow: #FFD700;
+            --negro: #0a0a0a;
+            --gris: #1a1a1a;
+            --danger: #6e0000;
+            --success: #00c853;
+        }
+:root {
+    /* 🔥 ROJO ÍGNEO (antes fuxia) - Llamas y calor */
+    --fuxia: #ff1a1a;
+    --fuxia-dark: #8b0000;
+    
+    /* ❄️ AZUL ELÉCTRICO (antes verde) - Cenizas y frío */
+    --verde: #0066ff;
+    --verde-glow: #00ccff;
+    
+    /* ⚡ AMARILLO MAGMA (antes amarillo) - Chispas y calor extremo */
+    --amarillo: #ff4500;
+    --amarillo-glow: #ff6b35;
+    
+    /* 🌑 CENIZA OSCURA - Fondos profundos */
+    --negro: #0d0d0d;
+    --gris: #1f1f2e;
+    
+    /* 💀 CENIZA CLARA - Textos secundarios */
+    --danger: #ff0040;
+    --success: #00d4ff;
+}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--negro);
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animación de humo en el fondo */
+        .smoke-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .smoke {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 20, 147, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(57, 255, 20, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(255, 255, 0, 0.08) 0%, transparent 50%);
+            animation: smokeMove 20s ease-in-out infinite;
+        }
+
+        .smoke:nth-child(2) {
+            animation-delay: -5s;
+            opacity: 0.6;
+        }
+
+        .smoke:nth-child(3) {
+            animation-delay: -10s;
+            opacity: 0.4;
+        }
+
+        @keyframes smokeMove {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                filter: blur(60px);
+            }
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+                filter: blur(80px);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+                filter: blur(70px);
+            }
+        }
+
+        /* Header estilo IL Benedetto */
+        .zaza-header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            position: relative;
+            background: linear-gradient(135deg, rgba(255,20,147,0.2) 0%, rgba(57,255,20,0.1) 50%, rgba(255,255,0,0.15) 100%);
+            border-bottom: 3px solid var(--fuxia);
+            box-shadow: 0 10px 40px rgba(255, 20, 147, 0.3);
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: conic-gradient(from 0deg, var(--fuxia), var(--verde), var(--amarillo), var(--fuxia));
+            border-radius: 25%;
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+            filter: blur(10px);
+            opacity: 0.8;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-img {
+            width: 180px;
+            height: 180px;
+            border-radius: 25%;
+            object-fit: cover;
+            border: 4px solid var(--amarillo);
+            box-shadow: 0 0 30px var(--fuxia), 0 0 60px var(--verde);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .zaza-title {
+            font-size: 4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            background: linear-gradient(45deg, var(--fuxia), var(--verde), var(--amarillo), var(--fuxia));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
+            margin-top: 20px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .zaza-subtitle {
+            color: var(--verde);
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            text-shadow: 0 0 10px var(--verde);
+        }
+
+        .zaza-slogan {
+            color: var(--amarillo);
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-top: 15px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6); }
+        }
+
+        /* Botón principal de acceso */
+        .access-btn {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, var(--fuxia) 0%, var(--fuxia-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            box-shadow: 0 0 20px var(--fuxia), 0 0 40px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .access-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .access-btn:hover::before {
+            left: 100%;
+        }
+
+        .access-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 30px var(--fuxia), 0 0 60px rgba(255, 20, 147, 0.6);
+        }
+
+        /* Tarjeta de perfil ZAZA */
+        .perfil-section {
+            display: flex;
+            justify-content: center;
+            margin: -60px auto 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .perfil-card {
+            background: linear-gradient(135deg, rgba(255,20,147,0.2) 0%, rgba(57,255,20,0.1) 50%, rgba(255,255,0,0.15) 100%);
+            border: 2px solid var(--fuxia);
+            border-radius: 20px;
+            padding: 25px;
+            width: 550px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgb(65, 65, 65);
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .perfil-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--fuxia), transparent, var(--verde), transparent);
+            animation: rotate 10s linear infinite;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .perfil-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .perfil-foto {
+            width: 70px;
+            height: 70px;
+            border-radius: 25%;
+            border: 3px solid var(--verde);
+            object-fit: cover;
+            box-shadow: 0 0 15px var(--verde);
+        }
+
+        .perfil-info {
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+
+        .nombre {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--amarillo);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .badge {
+            background: linear-gradient(90deg, var(--fuxia), var(--verde));
+            color: #000;
+            font-size: 0.8em;
+            padding: 4px 10px;
+            border-radius: 8px;
+            margin-left: 8px;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+        }
+
+        .estado {
+            font-style: italic;
+            color: var(--verde);
+            margin-top: 5px;
+            font-size: 0.95rem;
+            text-shadow: 0 0 5px var(--verde);
+        }
+
+        .online-dot {
+            width: 14px;
+            height: 14px;
+            background: var(--verde);
+            border-radius: 25%;
+            border: 2px solid #111;
+            box-shadow: 0 0 10px var(--verde);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7); }
+            70% { transform: scale(1.2); box-shadow: 0 0 10px 10px rgba(57, 255, 20, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); }
+        }
+
+        .gif-container {
+            margin-top: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--fuxia);
+        }
+
+        .gif-container img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Reproductor estilo ZAZA */
+        .player-section {
+            text-align: center;
+            margin: 40px 20px;
+        }
+
+        .player-title {
+            color: var(--amarillo);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px var(--amarillo);
+        }
+
+        .zaza-player {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(255,20,147,0.2), rgba(57,255,20,0.1));
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid var(--fuxia);
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.3);
+        }
+
+        .player-container {
+            position: relative;
+            display: inline-block;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            width: 400px;
+            height: 225px;
+            background: #000;
+        }
+
+        .player-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            z-index: 2;
+            border-bottom: 2px solid var(--fuxia);
+        }
+
+        .player-artist-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 25%;
+            border: 2px solid var(--verde);
+            position: absolute;
+            left: 15px;
+            box-shadow: 0 0 10px var(--verde);
+        }
+
+        .player-song-title {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: underline;
+            text-decoration-color: var(--fuxia);
+            margin-left: 40px;
+        }
+
+        .player-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--fuxia);
+            color: #fff;
+            font-size: 28px;
+            width: 80px;
+            height: 80px;
+            border: none;
+            border-radius: 25%;
+            cursor: pointer;
+            box-shadow: 0 0 30px var(--fuxia), 0 0 60px rgba(255, 20, 147, 0.5);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+        }
+
+        .play-btn:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: var(--verde);
+            box-shadow: 0 0 40px var(--verde);
+        }
+
+        .play-btn.playing {
+            background: #444;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        /* Modales */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b2e 100%);
+            border: 3px solid var(--fuxia);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 50px var(--fuxia), 0 0 100px rgba(57, 255, 20, 0.3);
+            position: relative;
+            animation: slideUp 0.4s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            color: var(--amarillo);
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px var(--amarillo);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--fuxia);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .close-modal:hover {
+            color: var(--verde);
+            transform: rotate(90deg);
+        }
+
+        /* Inputs estilo ZAZA */
+        .zaza-input {
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--fuxia);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .zaza-input:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+            transform: scale(1.02);
+        }
+
+        .zaza-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .zaza-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--verde) 0%, var(--verde-glow) 100%);
+            color: black;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .zaza-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--verde);
+        }
+
+        .zaza-btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Botón de editar/eliminar */
+        .zaza-btn-secondary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--fuxia) 0%, var(--fuxia-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.4);
+            font-family: 'Poppins', sans-serif;
+            margin-top: 15px;
+        }
+
+        .zaza-btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--fuxia);
+        }
+
+        .zaza-btn-danger {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--danger) 0%, #cc0000 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.4);
+            font-family: 'Poppins', sans-serif;
+            margin-top: 15px;
+        }
+
+        .zaza-btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--danger);
+        }
+
+        .error-msg {
+            color: #ff4444;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            font-weight: 600;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Grid de ÁLBUM/CANCIÓNes */
+        #albumes-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            padding: 60px 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .album-zaza {
+            background: linear-gradient(135deg, rgba(255,20,147,0.1) 0%, rgba(57,255,20,0.05) 100%);
+            border: 2px solid var(--fuxia);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .album-zaza::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--fuxia), var(--verde), var(--amarillo), var(--fuxia));
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .album-zaza:hover::before {
+            opacity: 1;
+        }
+
+        .album-zaza:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 20, 147, 0.3);
+        }
+
+        /* Modo eliminar overlay */
+        .modo-eliminar-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 23, 68, 0.3);
+            z-index: 5;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .modo-eliminar-activo .modo-eliminar-overlay {
+            display: flex;
+        }
+
+        .modo-eliminar-badge {
+            background: var(--danger);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            animation: pulse 1s infinite;
+        }
+
+        .album-img-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+        }
+
+        .album-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s;
+            filter: contrast(1.1) saturate(1.2);
+        }
+
+        .album-zaza:hover .album-img {
+            transform: scale(1.1);
+            filter: contrast(1.2) saturate(1.4) brightness(1.1);
+        }
+
+        .album-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .album-zaza:hover .album-overlay {
+            opacity: 1;
+        }
+
+        .album-info {
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .album-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--amarillo);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--amarillo);
+        }
+
+        .album-desc {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Botones de plataformas */
+        .botones-zaza {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-platform {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 15px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .btn-spotify {
+            background: #1DB954;
+            color: white;
+        }
+
+        .btn-spotify:hover {
+            box-shadow: 0 0 20px #1DB954;
+            transform: translateY(-2px);
+        }
+
+        .btn-apple {
+            background: #FA243C;
+            color: white;
+        }
+
+        .btn-apple:hover {
+            box-shadow: 0 0 20px #FA243C;
+            transform: translateY(-2px);
+        }
+
+        .btn-soundcloud {
+            background: #FF5500;
+            color: white;
+        }
+
+        .btn-soundcloud:hover {
+            box-shadow: 0 0 20px #FF5500;
+            transform: translateY(-2px);
+        }
+
+        .btn-youtube {
+            background: #FF0000;
+            color: white;
+        }
+
+        .btn-youtube:hover {
+            box-shadow: 0 0 20px #FF0000;
+            transform: translateY(-2px);
+        }
+
+        .btn-audiomack {
+            background: #FFA200;
+            color: black;
+        }
+
+        .btn-audiomack:hover {
+            box-shadow: 0 0 20px #FFA200;
+            transform: translateY(-2px);
+        }
+
+        .btn-platform img {
+            width: 18px;
+            height: 18px;
+            filter: brightness(0) invert(1);
+        }
+
+        .btn-audiomack img {
+            filter: none;
+        }
+
+        /* Admin buttons en cards */
+        .admin-btns {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .admin-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 25%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .admin-btn.edit {
+            background: var(--success);
+            color: white;
+        }
+
+        .admin-btn.edit:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--success);
+        }
+
+        .admin-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .admin-btn.delete:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--danger);
+        }
+
+        /* Formulario de creación */
+        .form-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-label {
+            display: block;
+            padding: 20px;
+            background: rgba(255, 20, 147, 0.2);
+            border: 2px dashed var(--fuxia);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--fuxia);
+            font-weight: 600;
+        }
+
+        .file-label:hover {
+            background: rgba(255, 20, 147, 0.3);
+            border-color: var(--verde);
+            color: var(--verde);
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+            border: 2px solid var(--verde);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: var(--verde);
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--verde);
+            border-top-color: transparent;
+            border-radius: 25%;
+            margin-left: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .success-msg {
+            display: none;
+            text-align: center;
+            color: var(--verde);
+            margin-top: 20px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px var(--verde);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--amarillo);
+            margin: 40px 0 20px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px var(--amarillo);
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--fuxia), var(--verde));
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+
+        .error-container {
+            text-align: center;
+            color: #ff4444;
+            padding: 40px;
+            grid-column: 1/-1;
+            background: rgba(255, 68, 68, 0.1);
+            border: 2px solid #ff4444;
+            border-radius: 15px;
+            margin: 20px;
+        }
+
+        .error-container button {
+            margin-top: 15px;
+            padding: 10px 25px;
+            background: var(--fuxia);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Banner modo eliminar */
+        .modo-eliminar-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--danger);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            z-index: 9999;
+            font-weight: 700;
+            animation: pulse 1s infinite;
+            display: none;
+        }
+
+        .modo-eliminar-banner.active {
+            display: block;
+        }
+
+        .modo-eliminar-banner button {
+            margin-left: 15px;
+            padding: 8px 20px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .modo-eliminar-banner button:hover {
+            background: white;
+            color: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            #albumes-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            #albumes-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .zaza-title { font-size: 2.5rem; letter-spacing: 4px; }
+            .logo-img { width: 140px; height: 140px; }
+            .perfil-card { width: 90%; max-width: 350px; }
+            .player-container { width: 90%; max-width: 400px; height: 200px; }
+            .modal-content { padding: 30px 20px; width: 95%; }
+            
+            #albumes-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                padding: 40px 15px;
+            }
+
+            .album-title {
+                font-size: 1.1rem;
+            }
+
+            .album-desc {
+                font-size: 0.85rem;
+            }
+
+            .btn-platform {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                gap: 4px;
+            }
+
+            .btn-platform img {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #albumes-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--negro);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--fuxia), var(--verde));
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--verde), var(--amarillo));
+        }
+
+        /* Efecto de partículas */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--fuxia);
+            border-radius: 25%;
+            animation: float 10s infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            border-radius: 25%;
+            background: rgba(255,20,147,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--fuxia);
+            transition: all 0.3s;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .social-icons a:hover {
+            background: var(--fuxia);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 0 20px var(--fuxia);
+        }
+
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: var(--verde);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            border: 1px solid var(--verde);
+            max-width: 300px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Banner modo eliminar -->
+     <div id="modoEliminarBanner" class="modo-eliminar-activo" style="display: none;">
+    🗑️ MODO ELIMINAR ACTIVO - Toca un producto para eliminarlo
+    <button onclick="desactivarModoEliminar()" style="margin-left: 10px; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">CERRAR</button>
+  </div>
+
+    <!-- Debug info -->
+    <div class="debug-info" id="debugInfo">
+        IL Benedetto <!-- Elementos ocultos para estado de Firebase -->
+<div style="display: none;">
+    <span id="firebaseStatus">Desconectado</span>
+    <span id="albumCount">0</span>
+</div>
+    </div>
+
+    <!-- Efectos de humo -->
+    <div class="smoke-container">
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+    </div>
+
+    <!-- Partículas -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header IL Benedetto -->
+    <header class="zaza-header">
+        <div class="logo-container">
+            <img src="https://i.ibb.co/Gv4Fw2NH/logobenedetto.jpg" alt="IL Benedetto Logo" class="logo-img">
+        </div>
+        <h1 class="zaza-title">łⱠ ฿Ɇ₦ɆĐɆ₮₮Ø</h1>
+        <p class="zaza-subtitle">"tu slogan"</p>
+        <p class="zaza-slogan"> <span style="color: #fff;">✟ </span>𝓑𝓔𝓝𝓓𝓔𝓒𝓘𝓓𝓞<span style="color: #fff;"> ✟</span> </p>
+        
+    <br>
+    </header>
+
+    <!-- Tarjeta de Perfil -->
+    <section class="perfil-section">
+        <div class="perfil-card">
+            <div class="perfil-header">
+                <img src="https://i.ibb.co/Gv4Fw2NH/logobenedetto.jpg" alt="IL Benedetto" class="perfil-foto">
+                <div class="perfil-info">
+                    <div class="nombre">
+                        @IL Benedetto <span class="badge">𝓑𝓔𝓝𝓓𝓔𝓒𝓘𝓓𝓞</span>
+                    </div>
+                    <div class="estado">🎵 𝔈𝔫 𝔢𝔩 𝔢𝔰𝔱𝔲𝔡𝔦𝔬...</div>
+                </div>
+                <span class="online-dot"></span>
+            </div>
+
+        </div>
+    </section>
+  <style>
+    .youtube-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: #FF0000;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 50px;
+      box-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000, 0 0 40px #FF0000;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .youtube-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #FF0000, 0 0 40px #FF0000, 0 0 60px #FF0000;
+    }
+
+    .youtube-logo {
+      width: 24px;
+      height: 24px;
+      fill: white;
+      filter: drop-shadow(0 0 5px #fff);
+    }
+  </style>
+<!-- Sección del Reproductor de Video ZAZA -->
+<section hidden class="zaza-video-section">
+    <h2 class="video-title">"ZAZABOY"<br> <span style="color: fuchsia;"> MALINNATO</span></h2>
+    
+    <div class="video-container">
+        <video id="zazaVideo" class="zaza-video" poster="https://i.ibb.co/Gv4Fw2NH/logobenedetto.jpg">
+            <source src="zazzaboysvideo.mp4" type="video/mp4">
+            Tu navegador no soporta el video.
+        </video>
+        
+        <!-- Overlay con botón play -->
+        <div id="videoOverlay" class="video-overlay">
+            <button id="playPauseBtn" class="zaza-play-btn" onclick="toggleVideo()">
+                <span class="play-icon">▶</span>
+            </button>
+        </div>
+        
+        <!-- Barra de controles -->
+        <div class="video-controls">
+            <div class="progress-container" onclick="seekVideo(event)">
+                <div class="progress-bar" id="progressBar"></div>
+                <div class="progress-handle" id="progressHandle"></div>
+            </div>
+            <div class="controls-row">
+                <span class="time-display" id="currentTime">0:00</span>
+                <span class="time-display" id="duration">0:00</span>
+            </div>
+        </div>
+    </div> <BR></BR><a class="youtube-btn" href="https://www.youtube.com/watch?v=XYX9uSdjlFk" target="_blank">
+    <!-- Logo SVG de YouTube -->
+    <svg class="youtube-logo" viewBox="0 0 24 24">
+      <path d="M23.5 6.2s-.2-1.6-.8-2.3c-.8-.9-1.7-.9-2.1-1C17.6 2.5 12 2.5 12 2.5h-.1s-5.6 0-8.6.4c-.4.1-1.3.1-2.1 1-.6.7-.8 2.3-.8 2.3S0 8.1 0 10v4c0 1.9.2 3.8.2 3.8s.2 1.6.8 2.3c.8.9 1.9.9 2.4 1 1.7.2 7.2.4 8.6.4h.1s5.6 0 8.6-.4c.4-.1 1.3-.1 2.1-1 .6-.7.8-2.3.8-2.3s.2-1.9.2-3.8v-4c0-1.9-.2-3.8-.2-3.8zM9.6 15.6V8.4l6.4 3.6-6.4 3.6z"/>
+    </svg>
+    VER EN YOUTUBE
+  </a>
+</section><style>
+/* ==========================================
+   REPRODUCTOR DE VIDEO IL Benedetto
+   ========================================== */
+
+.zaza-video-section {
+    text-align: center;
+    margin: 40px 20px;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, rgba(255,20,147,0.1) 0%, rgba(57,255,20,0.05) 50%, rgba(255,255,0,0.1) 100%);
+    border-radius: 30px;
+    border: 2px solid var(--fuxia);
+    box-shadow: 0 0 40px rgba(255, 20, 147, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.zaza-video-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 400px;
+    height: 400px;
+    background: conic-gradient(from 0deg, transparent, var(--fuxia), transparent, var(--verde), transparent);
+    animation: rotate 15s linear infinite;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.video-title {
+    color: var(--amarillo);
+    font-size: 2rem;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px var(--amarillo);
+    position: relative;
+    z-index: 1;
+}
+
+.video-container {
+    position: relative;
+    max-width: 200px;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 20, 147, 0.3);
+    border: 3px solid var(--fuxia);
+    z-index: 1;
+}
+
+.zaza-video {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: #000;
+}
+
+/* Overlay con efecto de pulso */
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(2px);
+}
+
+.video-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Botón Play/Pause ZAZA */
+.zaza-play-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 25%;
+    background: linear-gradient(135deg, var(--verde) 0%, var(--verde-glow) 100%);
+    border: 4px solid var(--amarillo);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 0 30px var(--verde),
+        0 0 60px rgba(57, 255, 20, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: pulse-glow 2s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+.zaza-play-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+    transform: rotate(45deg);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+.zaza-play-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 
+        0 0 50px var(--verde),
+        0 0 100px rgba(57, 255, 20, 0.7),
+        inset 0 0 30px rgba(255, 255, 255, 0.3);
+    border-color: #fff;
+}
+
+.zaza-play-btn:hover::before {
+    animation: shine 0.8s ease-in-out;
+}
+
+.zaza-play-btn:active {
+    transform: scale(0.95);
+}
+
+/* Icono de play/pause */
+.play-icon {
+    font-size: 2.5rem;
+    color: #000;
+    margin-left: 5px;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.zaza-play-btn.playing {
+    background: linear-gradient(135deg, var(--fuxia) 0%, var(--fuxia-dark) 100%);
+    border-color: var(--amarillo);
+    box-shadow: 
+        0 0 30px var(--fuxia),
+        0 0 60px rgba(255, 20, 147, 0.5);
+    animation: none;
+    width: 70px;
+    height: 70px;
+    opacity: 0;
+}
+
+.video-container:hover .zaza-play-btn.playing {
+    opacity: 1;
+}
+
+.zaza-play-btn.playing .play-icon {
+    margin-left: 0;
+}
+
+/* Animaciones */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 
+            0 0 30px var(--verde),
+            0 0 60px rgba(57, 255, 20, 0.5);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 
+            0 0 50px var(--verde),
+            0 0 80px rgba(57, 255, 20, 0.7);
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+}
+
+/* Barra de controles */
+.video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+    padding: 30px 20px 20px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.video-container:hover .video-controls {
+    transform: translateY(0);
+}
+
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 10px;
+    overflow: visible;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--fuxia), var(--verde));
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 10px var(--verde);
+}
+
+.progress-handle {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    background: var(--amarillo);
+    border-radius: 25%;
+    transform: translate(-50%, -50%) scale(0);
+    left: 0%;
+    box-shadow: 0 0 15px var(--amarillo);
+    transition: transform 0.2s ease;
+}
+
+.progress-container:hover .progress-handle {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--verde);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-shadow: 0 0 10px var(--verde);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .video-container {
+        border-radius: 15px;
+        border-width: 2px;
+    }
+    
+    .zaza-play-btn {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .play-icon {
+        font-size: 2rem;
+    }
+    
+    .video-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .zaza-play-btn {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .play-icon {
+        font-size: 1.5rem;
+    }
+}/* ==========================================
+   🔥 TEMA INFIERNO AZUL - IL Benedetto
+   Llamas rojas + Cenizas azules + Electricidad
+   ========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--negro);
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ==========================================
+   🔥 FONDO ANIMADO - LLAMAS Y CENIZAS
+   ========================================== */
+.smoke-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.smoke {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Llamas rojas abajo */
+        radial-gradient(ellipse at 50% 100%, rgba(255, 26, 26, 0.4) 0%, transparent 50%),
+        /* Cenizas azules arriba */
+        radial-gradient(ellipse at 20% 0%, rgba(0, 102, 255, 0.25) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 0%, rgba(0, 204, 255, 0.2) 0%, transparent 40%),
+        /* Brasas dispersas */
+        radial-gradient(circle at 30% 70%, rgba(255, 69, 0, 0.3) 0%, transparent 30%),
+        radial-gradient(circle at 70% 80%, rgba(255, 26, 26, 0.2) 0%, transparent 30%);
+    animation: infernoMove 15s ease-in-out infinite;
+    filter: blur(40px);
+}
+
+.smoke:nth-child(2) {
+    animation-delay: -5s;
+    opacity: 0.7;
+    background: 
+        radial-gradient(ellipse at 60% 100%, rgba(139, 0, 0, 0.5) 0%, transparent 60%),
+        radial-gradient(ellipse at 40% 0%, rgba(0, 212, 255, 0.15) 0%, transparent 50%);
+}
+
+.smoke:nth-child(3) {
+    animation-delay: -10s;
+    opacity: 0.5;
+    background: 
+        radial-gradient(circle at 50% 50%, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
+}
+
+@keyframes infernoMove {
+    0%, 100% {
+        transform: translateY(0) scale(1) rotate(0deg);
+        filter: blur(40px) contrast(1);
+    }
+    25% {
+        transform: translateY(-20px) scale(1.05) rotate(1deg);
+        filter: blur(50px) contrast(1.1);
+    }
+    50% {
+        transform: translateY(10px) scale(0.95) rotate(-1deg);
+        filter: blur(35px) contrast(1.2);
+    }
+    75% {
+        transform: translateY(-10px) scale(1.02) rotate(0.5deg);
+        filter: blur(45px) contrast(1.1);
+    }
+}
+
+/* ==========================================
+   ⚡ HEADER CON AURA ÍGNEA Y ELÉCTRICA
+   ========================================== */
+.zaza-header {
+    text-align: center;
+    padding: 60px 20px 40px;
+    position: relative;
+    background: 
+        linear-gradient(180deg, rgba(0, 102, 255, 0.15) 0%, transparent 50%),
+        linear-gradient(0deg, rgba(255, 26, 26, 0.2) 0%, transparent 60%);
+    border-bottom: 3px solid var(--fuxia);
+    box-shadow: 
+        0 10px 40px rgba(255, 26, 26, 0.4),
+        0 0 60px rgba(0, 102, 255, 0.2),
+        inset 0 -10px 40px rgba(255, 26, 26, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.zaza-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 26, 26, 0.2), 
+        rgba(0, 102, 255, 0.2), 
+        transparent
+    );
+    animation: electricSweep 4s ease-in-out infinite;
+}
+
+@keyframes electricSweep {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* Logo con halo de fuego y hielo */
+.logo-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.logo-container::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
+    background: conic-gradient(
+        from 0deg,
+        var(--fuxia),
+        var(--amarillo),
+        var(--verde),
+        var(--fuxia-dark),
+        var(--fuxia)
+    );
+    border-radius: 25%;
+    animation: fireRotate 3s linear infinite;
+    z-index: -1;
+    filter: blur(15px);
+    opacity: 0.9;
+}
+
+.logo-container::after {
+    content: '';
+    position: absolute;
+    top: -25px;
+    left: -25px;
+    right: -25px;
+    bottom: -25px;
+    background: conic-gradient(
+        from 180deg,
+        var(--verde),
+        var(--verde-glow),
+        var(--fuxia),
+        var(--verde)
+    );
+    border-radius: 25%;
+    animation: fireRotate 5s linear infinite reverse;
+    z-index: -2;
+    filter: blur(25px);
+    opacity: 0.5;
+}
+
+@keyframes fireRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.logo-img {
+    width: 180px !important;
+    height: 180px !important;
+    border-radius: 25%;
+    object-fit: cover;
+    border: 4px solid var(--amarillo);
+    box-shadow: 
+        0 0 30px var(--fuxia),
+        0 0 60px var(--fuxia-dark),
+        0 0 90px var(--verde),
+        inset 0 0 30px rgba(255, 26, 26, 0.3);
+    animation: emberPulse 2s ease-in-out infinite;
+}
+
+@keyframes emberPulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 
+            0 0 30px var(--fuxia),
+            0 0 60px var(--fuxia-dark),
+            0 0 90px var(--verde);
+    }
+    50% { 
+        transform: scale(1.03);
+        box-shadow: 
+            0 0 40px var(--fuxia),
+            0 0 80px var(--amarillo),
+            0 0 120px var(--verde-glow);
+    }
+}
+
+/* Título con degradado fuego-hielo */
+.zaza-title {
+    font-size: 4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    background: linear-gradient(
+        45deg,
+        var(--fuxia) 0%,
+        var(--amarillo) 25%,
+        var(--verde-glow) 50%,
+        var(--verde) 75%,
+        var(--fuxia) 100%
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fireIceShift 4s ease infinite;
+    text-shadow: 0 0 30px rgba(255, 26, 26, 0.5);
+    margin-top: 20px;
+    position: relative;
+}
+
+.zaza-title::after {
+    content: 'IL Benedetto';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.8) 50%,
+        transparent 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: textShine 3s ease-in-out infinite;
+    opacity: 0.3;
+}
+
+@keyframes fireIceShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes textShine {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+}
+
+/* Subtítulo ceniza azul */
+.zaza-subtitle {
+    color: var(--verde);
+    font-size: 1.3rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    text-shadow: 
+        0 0 10px var(--verde),
+        0 0 20px var(--verde-glow);
+    animation: electricFlicker 4s ease-in-out infinite;
+}
+
+@keyframes electricFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; text-shadow: 0 0 20px var(--verde-glow), 0 0 40px var(--verde); }
+    52% { opacity: 1; }
+    54% { opacity: 0.9; }
+}
+
+/* Slogan con brasa */
+.zaza-slogan {
+    color: var(--amarillo);
+    font-size: 1.1rem;
+    font-style: italic;
+    margin-top: 15px;
+    text-shadow: 
+        0 0 15px rgba(255, 69, 0, 0.6),
+        0 0 30px rgba(255, 26, 26, 0.4);
+    animation: emberGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes emberGlow {
+    from { 
+        text-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
+        color: var(--amarillo);
+    }
+    to { 
+        text-shadow: 
+            0 0 25px rgba(255, 107, 53, 0.9),
+            0 0 50px rgba(255, 26, 26, 0.6);
+        color: var(--amarillo-glow);
+    }
+}
+
+/* ==========================================
+   🔥 BOTÓN PRINCIPAL - ACCESO ÍGNEO
+   ========================================== */
+.access-btn {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 18px 50px;
+    background: linear-gradient(135deg, var(--fuxia) 0%, var(--fuxia-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    cursor: pointer;
+    box-shadow: 
+        0 0 20px var(--fuxia),
+        0 0 40px rgba(255, 26, 26, 0.5),
+        inset 0 0 20px rgba(255, 107, 53, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.access-btn::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--fuxia), var(--amarillo), var(--verde), var(--fuxia));
+    border-radius: 50px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.access-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.access-btn:hover::before {
+    opacity: 1;
+    animation: borderRotate 2s linear infinite;
+}
+
+.access-btn:hover::after {
+    left: 100%;
+}
+
+.access-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 
+        0 0 40px var(--fuxia),
+        0 0 80px rgba(255, 26, 26, 0.7),
+        0 0 120px rgba(0, 102, 255, 0.3);
+    letter-spacing: 4px;
+}
+
+@keyframes borderRotate {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* ==========================================
+   💎 TARJETA DE PERFIL - CRISTAL DE HIELO
+   ========================================== */
+.perfil-card {
+    background: 
+        linear-gradient(135deg, rgba(255, 26, 26, 0.15) 0%, rgba(0, 102, 255, 0.1) 50%, rgba(31, 31, 46, 0.8) 100%);
+    border: 2px solid var(--verde);
+    border-radius: 20px;
+    padding: 25px;
+    width: 350px;
+    color: #fff;
+    box-shadow: 
+        0 10px 30px rgba(0, 102, 255, 0.2),
+        0 0 40px rgba(255, 26, 26, 0.1),
+        inset 0 0 30px rgba(0, 102, 255, 0.05);
+    backdrop-filter: blur(10px);
+    animation: frostIn 1s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.perfil-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent,
+        var(--fuxia),
+        transparent,
+        var(--verde),
+        transparent
+    );
+    animation: slowRotate 15s linear infinite;
+    opacity: 0.08;
+    z-index: -1;
+}
+
+@keyframes frostIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.95);
+        filter: blur(10px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes slowRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.perfil-foto {
+    width: 70px;
+    height: 70px;
+    border-radius: 25%;
+    border: 3px solid var(--verde);
+    object-fit: cover;
+    box-shadow: 
+        0 0 15px var(--verde),
+        0 0 30px rgba(0, 102, 255, 0.3);
+    transition: all 0.3s;
+}
+
+.perfil-foto:hover {
+    transform: scale(1.1);
+    box-shadow: 
+        0 0 25px var(--verde-glow),
+        0 0 50px rgba(0, 204, 255, 0.5);
+}
+
+.nombre {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--amarillo);
+    text-shadow: 
+        0 0 10px rgba(255, 69, 0, 0.5),
+        0 0 20px rgba(255, 26, 26, 0.3);
+}
+
+.badge {
+    background: linear-gradient(90deg, var(--fuxia), var(--verde));
+    color: #fff !important;
+    font-size: 0.8em;
+    padding: 4px 10px;
+    border-radius: 8px;
+    margin-left: 8px;
+    font-weight: 700;
+    box-shadow: 
+        0 0 15px rgba(255, 26, 26, 0.5),
+        0 0 30px rgba(0, 102, 255, 0.3);
+    animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(255, 26, 26, 0.5); }
+    50% { box-shadow: 0 0 25px rgba(0, 204, 255, 0.8); }
+}
+
+.online-dot {
+    width: 25px !important;
+    height: 20px !important;
+    background: red !important;
+    border-radius: 25%;
+    border: 2px solid #111;
+    box-shadow: 
+        0 0 10px var(--verde-glow),
+        0 0 20px var(--verde);
+    animation: electricPulse 2s infinite;
+}
+
+@keyframes electricPulse {
+    0% { 
+        transform: scale(1); 
+        box-shadow: 0 0 0 0 rgba(0, 204, 255, 0.7);
+    }
+    70% { 
+        transform: scale(1.2); 
+        box-shadow: 0 0 0 15px rgba(0, 204, 255, 0);
+    }
+    100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 0 0 rgba(0, 204, 255, 0);
+    }
+}
+
+/* ==========================================
+   🎵 REPRODUCTOR - HORNO DE SONIDO
+   ========================================== */
+.zaza-player {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background: 
+        linear-gradient(135deg, rgba(255, 26, 26, 0.2), rgba(0, 102, 255, 0.15));
+    padding: 25px;
+    border-radius: 20px;
+    border: 2px solid var(--fuxia);
+    box-shadow: 
+        0 0 30px rgba(255, 26, 26, 0.3),
+        0 0 60px rgba(0, 102, 255, 0.1),
+        inset 0 0 30px rgba(255, 69, 0, 0.05);
+    position: relative;
+}
+
+.zaza-player::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 22px;
+    background: linear-gradient(45deg, var(--fuxia), var(--verde), var(--fuxia));
+    z-index: -1;
+    opacity: 0.5;
+    filter: blur(10px);
+}
+
+.player-container {
+    position: relative;
+    display: inline-block;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 
+        0 0 30px rgba(0, 0, 0, 0.8),
+        0 0 60px rgba(255, 26, 26, 0.2);
+    width: 400px;
+    height: 225px;
+    background: #000;
+    border: 2px solid var(--gris);
+}
+
+.player-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(13, 13, 13, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    z-index: 2;
+    border-bottom: 2px solid var(--fuxia);
+    box-shadow: 0 5px 20px rgba(255, 26, 26, 0.3);
+}
+
+.play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, var(--fuxia), var(--fuxia-dark));
+    color: #fff;
+    font-size: 28px;
+    width: 80px;
+    height: 80px;
+    border: none;
+    border-radius: 25%;
+    cursor: pointer;
+    box-shadow: 
+        0 0 30px var(--fuxia),
+        0 0 60px rgba(255, 26, 26, 0.5),
+        inset 0 0 20px rgba(255, 107, 53, 0.3);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    border: 3px solid var(--amarillo);
+}
+
+.play-btn:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: linear-gradient(135deg, var(--verde), var(--verde-glow));
+    box-shadow: 
+        0 0 40px var(--verde),
+        0 0 80px rgba(0, 204, 255, 0.6);
+    border-color: var(--verde-glow);
+}
+
+/* ==========================================
+   📀 CARDS DE ÁLBUMES - BRASAS CRISTALIZADAS
+   ========================================== */
+.album-zaza {
+    background: 
+        linear-gradient(135deg, rgba(255, 26, 26, 0.08) 0%, rgba(0, 102, 255, 0.05) 100%);
+    border: 2px solid transparent;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    animation: emberRise 0.6s ease;
+    background-clip: padding-box;
+}
+
+.album-zaza::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(
+        45deg,
+        var(--fuxia),
+        var(--verde),
+        var(--amarillo),
+        var(--fuxia-dark),
+        var(--fuxia)
+    );
+    border-radius: 20px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background-size: 300% 300%;
+    animation: borderFlow 3s ease infinite;
+}
+
+.album-zaza:hover::before {
+    opacity: 1;
+}
+
+@keyframes borderFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.album-zaza:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 
+        0 20px 40px rgba(255, 26, 26, 0.3),
+        0 0 60px rgba(0, 102, 255, 0.2),
+        0 0 100px rgba(255, 69, 0, 0.1);
+}
+
+@keyframes emberRise {
+    from { 
+        opacity: 0;
+        transform: translateY(50px);
+        filter: blur(10px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+.album-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s;
+    filter: contrast(1.1) saturate(1.2) brightness(0.9);
+}
+
+.album-zaza:hover .album-img {
+    transform: scale(1.1);
+    filter: contrast(1.3) saturate(1.5) brightness(1.1);
+}
+
+.album-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to top,
+        rgba(13, 13, 13, 0.95) 0%,
+        rgba(139, 0, 0, 0.3) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.album-zaza:hover .album-overlay {
+    opacity: 1;
+}
+
+.album-info {
+    padding: 25px;
+    background: rgba(13, 13, 13, 0.9);
+    border-top: 1px solid var(--gris);
+    position: relative;
+}
+
+.album-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--fuxia), var(--verde), transparent);
+    opacity: 0.5;
+}
+
+.album-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--amarillo);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 
+        0 0 10px rgba(255, 69, 0, 0.5),
+        0 0 20px rgba(255, 26, 26, 0.3);
+}
+
+/* ==========================================
+   🎛️ BOTONES DE PLATAFORMAS - ELEMENTOS
+   ========================================== */
+.btn-platform {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 15px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-platform::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-platform:hover::before {
+    left: 100%;
+}
+
+.btn-spotify {
+    background: linear-gradient(135deg, #1DB954, #1ed760);
+    color: white;
+    box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+}
+
+.btn-spotify:hover {
+    box-shadow: 0 0 25px #1DB954, 0 0 50px rgba(29, 185, 84, 0.4);
+    transform: translateY(-3px) scale(1.05);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-apple {
+    background: linear-gradient(135deg, #FA243C, #ff4d6d);
+    color: white;
+    box-shadow: 0 4px 15px rgba(250, 36, 60, 0.3);
+}
+
+.btn-apple:hover {
+    box-shadow: 0 0 25px #FA243C, 0 0 50px rgba(250, 36, 60, 0.4);
+    transform: translateY(-3px) scale(1.05);
+}
+
+.btn-youtube {
+    background: linear-gradient(135deg, #FF0000, #ff3333);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+}
+
+.btn-youtube:hover {
+    box-shadow: 0 0 25px #FF0000, 0 0 50px rgba(255, 0, 0, 0.4);
+    transform: translateY(-3px) scale(1.05);
+}
+
+/* ==========================================
+   🧊 MODALES - PORTALES DIMENSIONALES
+   ========================================== */
+.modal-content {
+    background: 
+        linear-gradient(135deg, #0d0d0d 0%, #1f1f2e 50%, #0d0d0d 100%);
+    border: 3px solid transparent;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 
+        0 0 50px rgba(255, 26, 26, 0.3),
+        0 0 100px rgba(0, 102, 255, 0.2),
+        inset 0 0 50px rgba(0, 0, 0, 0.5);
+    position: relative;
+    animation: portalOpen 0.4s ease;
+    background-clip: padding-box;
+}
+
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: linear-gradient(45deg, var(--fuxia), var(--verde), var(--fuxia));
+    border-radius: 22px;
+    z-index: -1;
+    animation: borderRotate 4s linear infinite;
+}
+
+@keyframes portalOpen {
+    from { 
+        transform: scale(0.8) rotateX(10deg);
+        opacity: 0;
+        filter: blur(20px);
+    }
+    to { 
+        transform: scale(1) rotateX(0);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+.modal-title {
+    font-size: 2rem;
+    color: var(--amarillo);
+    text-align: center;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 
+        0 0 20px rgba(255, 69, 0, 0.6),
+        0 0 40px rgba(255, 26, 26, 0.3);
+    position: relative;
+}
+
+.modal-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--fuxia), var(--verde));
+    margin: 15px auto 0;
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--fuxia);
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: var(--fuxia);
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25%;
+}
+
+.close-modal:hover {
+    color: var(--verde-glow);
+    transform: rotate(90deg) scale(1.2);
+    background: rgba(255, 26, 26, 0.1);
+    box-shadow: 0 0 20px rgba(0, 204, 255, 0.3);
+}
+
+/* ==========================================
+   ✍️ INPUTS - RUNAS BRILLANTES
+   ========================================== */
+.zaza-input {
+    width: 100%;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    background: 
+        linear-gradient(135deg, rgba(255, 26, 26, 0.05), rgba(0, 102, 255, 0.05));
+    border: 2px solid var(--gris);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+}
+
+.zaza-input:focus {
+    border-color: var(--verde);
+    box-shadow: 
+        0 0 20px rgba(0, 102, 255, 0.4),
+        0 0 40px rgba(0, 204, 255, 0.2),
+        inset 0 0 10px rgba(0, 102, 255, 0.1);
+    transform: scale(1.02);
+    background: 
+        linear-gradient(135deg, rgba(255, 26, 26, 0.08), rgba(0, 102, 255, 0.08));
+}
+
+.zaza-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+}
+
+/* ==========================================
+   🔘 BOTONES PRINCIPALES - FORJA
+   ========================================== */
+.zaza-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--verde) 0%, var(--verde-glow) 100%);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 
+        0 0 20px rgba(0, 102, 255, 0.4),
+        0 0 40px rgba(0, 204, 255, 0.2);
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.zaza-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.zaza-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 0 30px var(--verde),
+        0 0 60px rgba(0, 204, 255, 0.5);
+    letter-spacing: 3px;
+}
+
+.zaza-btn:hover::before {
+    left: 100%;
+}
+
+.zaza-btn:disabled {
+    background: #2a2a3e;
+    color: #555;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.zaza-btn-secondary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--fuxia) 0%, var(--fuxia-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 
+        0 0 20px rgba(255, 26, 26, 0.4),
+        0 0 40px rgba(139, 0, 0, 0.2);
+    font-family: 'Poppins', sans-serif;
+    margin-top: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.zaza-btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 0 30px var(--fuxia),
+        0 0 60px rgba(255, 26, 26, 0.5);
+}
+
+.zaza-btn-danger {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--danger) 0%, #ff0040 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 
+        0 0 20px rgba(255, 0, 64, 0.4),
+        0 0 40px rgba(255, 0, 64, 0.2);
+    font-family: 'Poppins', sans-serif;
+    margin-top: 15px;
+}
+
+.zaza-btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 0 30px var(--danger),
+        0 0 60px rgba(255, 0, 64, 0.5);
+    background: linear-gradient(135deg, #ff0040 0%, #ff3366 100%);
+}
+
+/* ==========================================
+   🗑️ MODO ELIMINAR - ALERTA RADIACTIVA
+   ========================================== */
+.modo-eliminar-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, var(--danger), #ff0040, var(--danger));
+    background-size: 200% 100%;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    z-index: 9999;
+    font-weight: 700;
+    animation: 
+        dangerPulse 1s infinite,
+        dangerSlide 2s linear infinite;
+    display: none;
+    box-shadow: 0 5px 30px rgba(255, 0, 64, 0.6);
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.modo-eliminar-banner.active {
+    display: block;
+}
+
+@keyframes dangerPulse {
+    0%, 100% { 
+        opacity: 1;
+        box-shadow: 0 5px 30px rgba(255, 0, 64, 0.6);
+    }
+    50% { 
+        opacity: 0.9;
+        box-shadow: 0 5px 50px rgba(255, 0, 64, 0.9);
+    }
+}
+
+@keyframes dangerSlide {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+.modo-eliminar-badge {
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--danger);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    animation: warningFlash 0.5s infinite;
+    border: 2px solid var(--danger);
+    box-shadow: 0 0 20px var(--danger);
+}
+
+@keyframes warningFlash {
+    0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+/* ==========================================
+   📜 SCROLLBAR - CENIZA BRILLANTE
+   ========================================== */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--negro);
+    border-left: 1px solid var(--gris);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        180deg,
+        var(--fuxia),
+        var(--amarillo),
+        var(--verde),
+        var(--fuxia)
+    );
+    border-radius: 6px;
+    border: 2px solid var(--negro);
+    box-shadow: 0 0 10px rgba(255, 26, 26, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+        180deg,
+        var(--verde),
+        var(--verde-glow),
+        var(--amarillo),
+        var(--fuxia)
+    );
+    box-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
+}
+
+/* ==========================================
+   ✨ PARTÍCULAS - BRASAS FLOTANTES
+   ========================================== */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--fuxia);
+    border-radius: 25%;
+    animation: ashFloat 15s infinite;
+    opacity: 0.6;
+    box-shadow: 0 0 10px currentColor;
+}
+
+.particle:nth-child(3n) {
+    background: var(--verde);
+    width: 3px;
+    height: 3px;
+}
+
+.particle:nth-child(5n) {
+    background: var(--amarillo);
+    width: 5px;
+    height: 5px;
+    animation-duration: 12s;
+}
+
+@keyframes ashFloat {
+    0% {
+        transform: translateY(100vh) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(100px) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ==========================================
+   🔥 SECCIÓN DE VIDEO - PANTALLA DE MAGMA
+   ========================================== */
+.zaza-video-section {
+    text-align: center;
+    margin: 40px 20px;
+    padding: 40px 20px;
+    background: 
+        linear-gradient(135deg, 
+            rgba(255, 26, 26, 0.1) 0%, 
+            rgba(0, 102, 255, 0.08) 50%, 
+            rgba(255, 69, 0, 0.1) 100%
+        );
+    border-radius: 30px;
+    border: 2px solid var(--fuxia);
+    box-shadow: 
+        0 0 40px rgba(255, 26, 26, 0.2),
+        inset 0 0 60px rgba(0, 102, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.zaza-video-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 400px;
+    height: 400px;
+    background: conic-gradient(
+        from 0deg,
+        transparent,
+        var(--fuxia),
+        transparent,
+        var(--verde),
+        transparent
+    );
+    animation: slowRotate 20s linear infinite;
+    opacity: 0.03;
+    z-index: 0;
+}
+
+.video-title {
+    color: var(--amarillo);
+    font-size: 2rem;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 
+        0 0 20px rgba(255, 69, 0, 0.6),
+        0 0 40px rgba(255, 26, 26, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.video-container {
+    position: relative;
+    max-width: 200px;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.8),
+        0 0 40px rgba(255, 26, 26, 0.3),
+        0 0 80px rgba(0, 102, 255, 0.2);
+    border: 3px solid var(--fuxia);
+    z-index: 1;
+}
+
+.zaza-play-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 25%;
+    background: linear-gradient(135deg, var(--verde) 0%, var(--verde-glow) 100%);
+    border: 4px solid var(--amarillo);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 0 30px var(--verde),
+        0 0 60px rgba(0, 102, 255, 0.5),
+        0 0 90px rgba(0, 204, 255, 0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: icePulse 2s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes icePulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 30px var(--verde),
+            0 0 60px rgba(0, 102, 255, 0.5);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 
+            0 0 50px var(--verde-glow),
+            0 0 100px rgba(0, 204, 255, 0.7);
+        transform: scale(1.05);
+    }
+}
+
+.zaza-play-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 
+        0 0 50px var(--verde-glow),
+        0 0 100px rgba(0, 204, 255, 0.8),
+        0 0 150px rgba(0, 212, 255, 0.4);
+    border-color: #fff;
+}
+
+.play-icon {
+    font-size: 2.5rem;
+    color: #000;
+    margin-left: 5px;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+/* ==========================================
+   📱 RESPONSIVE - ADAPTACIÓN MÓVIL
+   ========================================== */
+@media (max-width: 768px) {
+    .zaza-title { 
+        font-size: 2.5rem; 
+        letter-spacing: 4px; 
+    }
+    
+    .logo-img { 
+        width: 140px; 
+        height: 140px; 
+    }
+    
+    .perfil-card { 
+        width: 90%; 
+        max-width: 350px; 
+    }
+    
+    .player-container { 
+        width: 90%; 
+        max-width: 400px; 
+        height: 200px; 
+    }
+    
+    .modal-content { 
+        padding: 30px 20px; 
+        width: 95%; 
+    }
+    
+    .zaza-play-btn {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .play-icon {
+        font-size: 2rem;
+    }
+    
+    .video-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .zaza-play-btn {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .play-icon {
+        font-size: 1.5rem;
+    }
+    
+    .access-btn {
+        padding: 15px 35px;
+        font-size: 1rem;
+    }
+}
+
+/* ==========================================
+   🎨 TÍTULOS DE SECCIÓN
+   ========================================== */
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: var(--amarillo);
+    margin: 40px 0 20px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    text-shadow: 
+        0 0 20px rgba(255, 69, 0, 0.6),
+        0 0 40px rgba(255, 26, 26, 0.3);
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--fuxia), var(--verde), var(--fuxia));
+    margin: 15px auto;
+    border-radius: 2px;
+    box-shadow: 0 0 15px var(--fuxia);
+}
+
+/* ==========================================
+   🔗 ICONOS SOCIALES - REDES DE FUEGO
+   ========================================== */
+.social-icons a {
+    width: 40px;
+    height: 40px;
+    border-radius: 25%;
+    background: rgba(255, 26, 26, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--fuxia);
+    transition: all 0.3s;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-icons a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.social-icons a:hover {
+    background: var(--fuxia);
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 
+        0 0 20px var(--fuxia),
+        0 0 40px rgba(255, 26, 26, 0.5);
+    border-color: var(--amarillo);
+}
+
+.social-icons a:hover::before {
+    left: 100%;
+}
+</style>
+<script>
+// ==========================================
+// REPRODUCTOR DE VIDEO IL Benedetto (VARIABLES RENOMBRADAS)
+// ==========================================
+
+const zazaVideo = document.getElementById('zazaVideo');
+const videoPlayBtn = document.getElementById('playPauseBtn');
+const videoOverlay = document.getElementById('videoOverlay');
+const videoProgressBar = document.getElementById('progressBar');
+const videoProgressHandle = document.getElementById('progressHandle');
+const videoCurrentTime = document.getElementById('currentTime');
+const videoDuration = document.getElementById('duration');
+
+let isVideoPlaying = false;
+
+function toggleVideo() {
+    if (zazaVideo.paused) {
+        zazaVideo.muted = false; // Asegurar que no esté mute
+        zazaVideo.volume = 1.0;  // Volumen al máximo
+        zazaVideo.play();
+        isVideoPlaying = true;
+        videoPlayBtn.classList.add('playing');
+        videoPlayBtn.innerHTML = '<span class="play-icon">⏸</span>';
+        videoOverlay.classList.add('hidden');
+    } else {
+        zazaVideo.pause();
+        isVideoPlaying = false;
+        videoPlayBtn.classList.remove('playing');
+        videoPlayBtn.innerHTML = '<span class="play-icon">▶</span>';
+        videoOverlay.classList.remove('hidden');
+    }
+}
+
+// Click en el video para pausar/reproducir
+zazaVideo.addEventListener('click', toggleVideo);
+
+// Actualizar barra de progreso
+zazaVideo.addEventListener('timeupdate', () => {
+    const progress = (zazaVideo.currentTime / zazaVideo.duration) * 100;
+    videoProgressBar.style.width = progress + '%';
+    videoProgressHandle.style.left = progress + '%';
+    videoCurrentTime.textContent = formatVideoTime(zazaVideo.currentTime);
+});
+
+// Cuando el video termina
+zazaVideo.addEventListener('ended', () => {
+    isVideoPlaying = false;
+    videoPlayBtn.classList.remove('playing');
+    videoPlayBtn.innerHTML = '<span class="play-icon">▶</span>';
+    videoOverlay.classList.remove('hidden');
+    videoProgressBar.style.width = '0%';
+    videoProgressHandle.style.left = '0%';
+});
+
+// Cargar duración total
+zazaVideo.addEventListener('loadedmetadata', () => {
+    videoDuration.textContent = formatVideoTime(zazaVideo.duration);
+});
+
+// Seek (adelantar/retroceder)
+function seekVideo(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    zazaVideo.currentTime = pos * zazaVideo.duration;
+}
+
+// Formatear tiempo (0:00)
+function formatVideoTime(seconds) {
+    if (isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return mins + ':' + (secs < 10 ? '0' : '') + secs;
+}
+
+// Mostrar controles al mover el mouse sobre el video
+let videoControlsTimeout;
+const videoContainer = document.querySelector('.video-container');
+
+videoContainer.addEventListener('mousemove', () => {
+    if (isVideoPlaying) {
+        videoPlayBtn.style.opacity = '1';
+        clearTimeout(videoControlsTimeout);
+        videoControlsTimeout = setTimeout(() => {
+            if (isVideoPlaying) {
+                videoPlayBtn.style.opacity = '0';
+            }
+        }, 2000);
+    }
+});
+
+videoContainer.addEventListener('mouseleave', () => {
+    if (isVideoPlaying) {
+        videoPlayBtn.style.opacity = '0';
+    }
+});
+</script>
+    <!-- Título de sección -->
+    <h3 class="section-title">📀𝑳𝑨𝑵𝒁𝑨𝑴𝑰𝑬𝑵𝑻𝑶𝑺📀</h3>
+
+    <!-- Contenedor de ÁLBUM/CANCIÓNes -->
+    <section id="albumes-container">
+        <div style="text-align: center; color: #666; padding: 40px; grid-column: 1/-1;">
+            <p>Cargando ÁLBUM/CANCIÓN...</p>
+        </div>
+    </section>
+
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h2 class="modal-title">🔒 Acceso Protegido</h2>
+            <input type="password" id="passwordInput" class="zaza-input" placeholder="Ingresa la contraseña...">
+            <button class="zaza-btn" onclick="checkPassword()">INGRESAR</button>
+                 <br>  <br><button style="background: rgb(105, 105, 105) !important; color: #fff;" class="zaza-btn" onclick="closeModal('loginModal')">VOLVER</button>  <p id="errorMsg" class="error-msg">❌ Contraseña incorrecta</p>
+        </div>
+    </div>
+
+    <!-- Modal de Creación/Edición -->
+    <div id="createModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('createModal')">&times;</span>
+            <h2 class="modal-title" id="modalTitle">🎵 Crear Nuevo ÁLBUM/CANCIÓN</h2>
+            
+            <div class="form-grid">
+                <input type="hidden" id="albumId">
+
+                <div class="file-input-wrapper">
+                    <input type="file" id="albumImage" accept="image/*" onchange="previewImage(this)">
+                    <label for="albumImage" class="file-label" id="fileLabel">
+                        📷 Seleccionar imagen del ÁLBUM/CANCIÓN
+                    </label>
+                    <img id="previewImg" class="preview-img">
+                    <button type="button" id="btnQuitarFoto" class="zaza-btn-danger" style="display: none; margin-top: 10px; font-size: 0.9rem;" onclick="quitarFoto()">
+                        ❌ Quitar foto
+                    </button>
+                </div>
+
+                <input type="text" id="albumTitle" class="zaza-input" placeholder="Nombre del ÁLBUM/CANCIÓN o canción *">
+                <textarea id="albumDesc" class="zaza-input" placeholder="Descripción del ÁLBUM/CANCIÓN..." rows="3"></textarea>
+                
+                <div style="border-top: 2px solid var(--fuxia); margin: 10px 0; padding-top: 15px;">
+                    <h3 style="color: var(--verde); margin-bottom: 15px; text-align: center; font-size: 1.1rem;">🔗 Links de Plataformas</h3>
+                    
+                    <input type="text" id="linkSpotify" class="zaza-input" placeholder="Link de Spotify">
+                    <input type="text" id="linkApple" class="zaza-input" placeholder="Link de Apple Music">
+                    <input type="text" id="linkSoundCloud" class="zaza-input" placeholder="Link de SoundCloud">
+                    <input type="text" id="linkYouTube" class="zaza-input" placeholder="Link de YouTube Music">
+                    <input type="text" id="linkAudiomack" class="zaza-input" placeholder="Link de Audiomack">
+                </div>
+
+                <button class="zaza-btn" id="saveAlbumBtn" onclick="guardarAlbum()" style="margin-top: 20px;">
+                    💾 GUARDAR ÁLBUM/CANCIÓN
+                </button>
+
+                <button class="zaza-btn-secondary" onclick="activarModoEliminar();desactivarModoEliminar()">
+                    🗑️ EDITAR O ELIMINAR ALBUM/CANCIÓN
+                </button>
+                
+                <div id="loadingMsg" class="loading">Guardando ÁLBUM/CANCIÓN...</div>
+                <div id="successMsg" class="success-msg">✅ ÁLBUM/CANCIÓN guardado exitosamente</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close-modal" onclick="closeModal('confirmModal')">&times;</span>
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">⚠️</div>
+                <h3 style="color: var(--amarillo); margin-bottom: 15px;">¿Confirmar?</h3>
+                <p id="confirmMessage" style="color: #ccc; margin-bottom: 25px;">¿Estás seguro?</p>
+                <button class="zaza-btn" id="btnConfirmarSi" style="margin-bottom: 10px;">
+                    ✅ SÍ, CONFIRMAR
+                </button>
+                <button class="zaza-btn-secondary" onclick="closeModal('confirmModal')" style="background: #444;">
+                    CANCELAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+       // ==========================================
+// CONFIGURACIÓN FIREBASE - CORREGIDO
+// ==========================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCtSuzBd0O_v_uD4fdkneJX9gJNOAeJkMc",
+  authDomain: "verde-bandito.firebaseapp.com",
+  databaseURL: "https://verde-bandito-default-rtdb.firebaseio.com/",  // ✅ FALTABA ESTO
+  projectId: "verde-bandito",
+  storageBucket: "verde-bandito.appspot.com",  // ✅ CORREGIDO
+  messagingSenderId: "223901500409",
+  appId: "1:223901500409:web:fc98b549715cf9fdd67328"
+};
+
+
+// Variables globales
+let app, db;
+let albumes = [];
+let isAdmin = false;
+let modoEliminar = false;
+let fotoTemporal = null;
+let guardando = false;
+let idAEliminar = null;
+
+// Inicializar Firebase cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎵 IL Benedetto iniciado');
+    
+    // Recuperar estado admin de la sesión
+    if (sessionStorage.getItem('zaza_admin') === 'true') {
+        isAdmin = true;
+        console.log('👑 Modo administrador restaurado');
+    }
+
+    // Configurar el logo para abrir el modal de login con pulsación larga
+    const logoContainer = document.querySelector('.logo-container');
+    if (logoContainer) {
+        let pressTimer;
+        logoContainer.addEventListener('mousedown', function() {
+            pressTimer = setTimeout(() => openLoginModal(), 2000);
+        });
+        logoContainer.addEventListener('mouseup', () => clearTimeout(pressTimer));
+        logoContainer.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+        // Soporte táctil
+        logoContainer.addEventListener('touchstart', function() {
+            pressTimer = setTimeout(() => openLoginModal(), 2000);
+        });
+        logoContainer.addEventListener('touchend', () => clearTimeout(pressTimer));
+    }
+
+    try {
+        // Verificar si Firebase ya está inicializado
+        if (!firebase.apps.length) {
+            app = firebase.initializeApp(firebaseConfig);
+        } else {
+            app = firebase.app();
+        }
+        
+        db = firebase.database();
+        console.log('✅ Firebase inicializado correctamente');
+        
+        // Actualizar estado en UI (si existe el elemento)
+        const statusEl = document.getElementById('firebaseStatus');
+        if (statusEl) {
+            statusEl.textContent = 'Conectado';
+            statusEl.style.color = 'var(--verde)';
+        }
+        
+        // Escuchar cambios en tiempo real
+        db.ref('albums').on('value', (snapshot) => {
+            console.log('📡 Datos recibidos de Firebase:', snapshot.val());
+            
+            const nuevosAlbumes = [];
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    nuevosAlbumes.push({ 
+                        id: child.key, 
+                        ...child.val() 
+                    });
+                });
+                // Ordenar por fecha de creación (más reciente primero)
+                nuevosAlbumes.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            }
+            
+            albumes = nuevosAlbumes;
+            console.log('📀 Álbumes cargados:', albumes.length);
+            
+            // Guardar backup en localStorage
+            localStorage.setItem('IL Benedetto_albums_backup', JSON.stringify(albumes));
+            
+            // Actualizar contador
+            const countEl = document.getElementById('albumCount');
+            if (countEl) countEl.textContent = albumes.length;
+            
+            renderAlbumes();
+            
+        }, (error) => {
+            console.error('❌ Error en tiempo real:', error);
+            usarDatosLocales();
+        });
+
+    } catch (error) {
+        console.error('❌ Error inicializando Firebase:', error);
+        const statusEl = document.getElementById('firebaseStatus');
+        if (statusEl) {
+            statusEl.textContent = 'Error: ' + error.message;
+            statusEl.style.color = '#ff4444';
+        }
+        usarDatosLocales();
+    }
+    
+    // Crear partículas
+    createParticles();
+});
+
+// Cargar desde localStorage como backup
+function usarDatosLocales() {
+    try {
+        const backup = localStorage.getItem('IL Benedetto_albums_backup');
+        if (backup) {
+            albumes = JSON.parse(backup);
+            console.log('💾 Cargando desde localStorage:', albumes.length, 'álbumes');
+            renderAlbumes();
+        } else {
+            renderAlbumes(); // Renderizar vacío
+        }
+    } catch (e) {
+        console.error('Error localStorage:', e);
+        renderAlbumes();
+    }
+}
+        // ==========================================
+        // EFECTOS VISUALES
+        // ==========================================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.background = ['var(--fuxia)', 'var(--verde)', 'var(--amarillo)'][Math.floor(Math.random() * 3)];
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // ==========================================
+        // REPRODUCTOR
+        // ==========================================
+        let isPlaying = false;
+        function togglePlay() {
+            const btn = document.getElementById('playBtn');
+            const audio = document.getElementById('audioPlayer');
+            
+            if (!audio.src) {
+                alert('Selecciona una canción para reproducir');
+                return;
+            }
+            
+            if (isPlaying) {
+                audio.pause();
+                btn.innerHTML = '▶';
+                btn.classList.remove('playing');
+                btn.style.background = 'var(--fuxia)';
+            } else {
+                audio.play();
+                btn.innerHTML = '⏸';
+                btn.classList.add('playing');
+                btn.style.background = '#444';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // ==========================================
+        // MODALES
+        // ==========================================
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('passwordInput').focus();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === '1234') {
+                isAdmin = true;
+                sessionStorage.setItem('zaza_admin', 'true');
+                closeModal('loginModal');
+                openCreateModal();
+                renderAlbumes(); // Volver a renderizar para mostrar botones de edición
+            } else {
+                const errorMsg = document.getElementById('errorMsg');
+                errorMsg.style.display = 'block';
+                const input = document.getElementById('passwordInput');
+                input.style.borderColor = '#ff4444';
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                }, 1000);
+            }
+        }
+
+        function openCreateModal() {
+            limpiarFormulario();
+            document.getElementById('modalTitle').textContent = '🎵 Crear Nuevo ÁLBUM/CANCIÓN';
+            document.getElementById('createModal').classList.add('active');
+        }
+
+        // ==========================================
+        // MODO ELIMINAR
+        // ==========================================
+        function activarModoEliminar() {
+            closeModal('createModal');
+            modoEliminar = true;
+            document.getElementById('modoEliminarBanner').classList.add('active');
+            renderAlbumes();
+        }
+
+        function desactivarModoEliminar() {
+            modoEliminar = false;
+            document.getElementById('modoEliminarBanner').classList.remove('active');
+            renderAlbumes();
+        }
+
+        // ==========================================
+        // FORMULARIO Y PREVIEW
+        // ==========================================
+        function previewImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                fotoTemporal = e.target.result;
+                document.getElementById('previewImg').src = fotoTemporal;
+                document.getElementById('previewImg').style.display = 'block';
+                document.getElementById('fileLabel').innerHTML = '📷 Cambiar imagen (' + file.name + ')';
+                document.getElementById('btnQuitarFoto').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function quitarFoto() {
+            fotoTemporal = null;
+            document.getElementById('albumImage').value = '';
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('fileLabel').innerHTML = '📷 Seleccionar imagen del ÁLBUM/CANCIÓN';
+            document.getElementById('btnQuitarFoto').style.display = 'none';
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('albumId').value = '';
+            document.getElementById('albumTitle').value = '';
+            document.getElementById('albumDesc').value = '';
+            document.getElementById('linkSpotify').value = '';
+            document.getElementById('linkApple').value = '';
+            document.getElementById('linkSoundCloud').value = '';
+            document.getElementById('linkYouTube').value = '';
+            document.getElementById('linkAudiomack').value = '';
+            quitarFoto();
+            document.getElementById('loadingMsg').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('saveAlbumBtn').disabled = false;
+            document.getElementById('saveAlbumBtn').innerHTML = '💾 GUARDAR ÁLBUM/CANCIÓN';
+        }
+
+        // ==========================================
+ // ==========================================
+// GUARDAR ÁLBUM/CANCIÓN (CREAR O EDITAR) - CORREGIDO
+// ==========================================
+async function guardarAlbum() {
+    if (guardando) {
+        console.log('⏳ Ya se está guardando...');
+        return;
+    }
+
+    const id = document.getElementById('albumId').value;
+    const esEdicion = !!id;
+    const titulo = document.getElementById('albumTitle').value.trim();
+
+    if (!titulo) {
+        alert('⚠️ El nombre del ÁLBUM/CANCIÓN es obligatorio');
+        document.getElementById('albumTitle').focus();
+        return;
+    }
+
+    // Verificar conexión a Firebase
+    if (!db) {
+        alert('❌ No hay conexión a la base de datos. Intenta recargar la página.');
+        return;
+    }
+
+    guardando = true;
+    const btn = document.getElementById('saveAlbumBtn');
+    const textoOriginal = btn.innerHTML;
+    btn.innerHTML = '⏳ Guardando...';
+    btn.disabled = true;
+    document.getElementById('loadingMsg').style.display = 'block';
+    document.getElementById('successMsg').style.display = 'none';
+
+    try {
+        // Preparar datos
+        const data = {
+            title: titulo,
+            description: document.getElementById('albumDesc').value.trim() || 'Sin descripción',
+            links: {
+                spotify: document.getElementById('linkSpotify').value.trim() || '',
+                apple: document.getElementById('linkApple').value.trim() || '',
+                soundcloud: document.getElementById('linkSoundCloud').value.trim() || '',
+                youtube: document.getElementById('linkYouTube').value.trim() || '',
+                audiomack: document.getElementById('linkAudiomack').value.trim() || ''
+            },
+            updatedAt: firebase.database.ServerValue.TIMESTAMP // Usar timestamp del servidor
+        };
+
+        // Manejar imagen
+        if (fotoTemporal) {
+            data.image = await comprimirImagen(fotoTemporal);
+        } else if (esEdicion) {
+            const existente = albumes.find(a => a.id === id);
+            if (existente?.image) {
+                data.image = existente.image;
+            } else {
+                data.image = 'https://i.ibb.co/Gv4Fw2NH/logobenedetto.jpg';
+            }
+        } else {
+            data.image = 'https://i.ibb.co/Gv4Fw2NH/logobenedetto.jpg';
+        }
+
+        if (esEdicion) {
+            // ========== EDITAR ==========
+            console.log('✏️ Editando ÁLBUM/CANCIÓN:', id);
+            
+            await db.ref('albums/' + id).update(data);
+            console.log('✅ Actualizado en Firebase');
+            
+        } else {
+            // ========== CREAR NUEVO ==========
+            console.log('🎵 Creando nuevo ÁLBUM/CANCIÓN');
+            
+            data.createdAt = firebase.database.ServerValue.TIMESTAMP;
+            
+            // Crear referencia con push() para obtener ID único
+            const nuevoRef = db.ref('albums').push();
+            await nuevoRef.set(data);
+            console.log('✅ Creado en Firebase con ID:', nuevoRef.key);
+        }
+
+        // Mostrar éxito
+        document.getElementById('loadingMsg').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+        
+        setTimeout(() => {
+            closeModal('createModal');
+            limpiarFormulario();
+            // No necesitas llamar renderAlbumes() aquí porque el listener en tiempo real lo hará automáticamente
+        }, 1500);
+
+    } catch (error) {
+        console.error('❌ Error guardando:', error);
+        if (error.message.includes('permission_denied') || error.message.includes('PERMISSION_DENIED')) {
+            alert('❌ ERROR DE PERMISOS: No tienes permiso para escribir en la base de datos. \n\nPor favor, asegúrate de que las Reglas de Firebase en la consola permitan escritura pública o que estés autenticado.');
+        } else {
+            alert('❌ Error al guardar: ' + error.message);
+        }
+        
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
+        document.getElementById('loadingMsg').style.display = 'none';
+    } finally {
+        guardando = false;
+    }
+}
+        // Comprimir imagen para no saturar localStorage
+        async function comprimirImagen(base64String) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                img.onload = () => {
+                    // Max 800px de ancho
+                    const maxWidth = 800;
+                    const scale = maxWidth / img.width;
+                    const width = img.width > maxWidth ? maxWidth : img.width;
+                    const height = img.width > maxWidth ? img.height * scale : img.height;
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Calidad 0.8 = buen balance calidad/peso
+                    const compressed = canvas.toDataURL('image/jpeg', 0.8);
+                    resolve(compressed);
+                };
+
+                img.src = base64String;
+            });
+        }
+
+        // ==========================================
+        // EDITAR ÁLBUM/CANCIÓN
+        // ==========================================
+        function editarAlbum(id) {
+            if (modoEliminar) {
+                desactivarModoEliminar();
+            }
+
+            const album = albumes.find(a => a.id === id);
+            if (!album) {
+                alert('❌ ÁLBUM/CANCIÓN no encontrado');
+                return;
+            }
+
+            // Limpiar y llenar formulario
+            limpiarFormulario();
+            
+            document.getElementById('albumId').value = id;
+            document.getElementById('modalTitle').textContent = '✏️ Editar ÁLBUM/CANCIÓN';
+            document.getElementById('albumTitle').value = album.title || '';
+            document.getElementById('albumDesc').value = album.description || '';
+            document.getElementById('linkSpotify').value = album.links?.spotify || '';
+            document.getElementById('linkApple').value = album.links?.apple || '';
+            document.getElementById('linkSoundCloud').value = album.links?.soundcloud || '';
+            document.getElementById('linkYouTube').value = album.links?.youtube || '';
+            document.getElementById('linkAudiomack').value = album.links?.audiomack || '';
+
+            // Mostrar imagen si existe
+            if (album.image && album.image !== 'https://i.ibb.co/Gv4Fw2NH/logobenedetto.jpg') {
+                fotoTemporal = album.image;
+                document.getElementById('previewImg').src = album.image;
+                document.getElementById('previewImg').style.display = 'block';
+                document.getElementById('fileLabel').innerHTML = '📷 Cambiar imagen actual';
+                document.getElementById('btnQuitarFoto').style.display = 'block';
+            }
+
+            document.getElementById('createModal').classList.add('active');
+        }
+
+        // ==========================================
+        // ELIMINAR ÁLBUM/CANCIÓN
+        // ==========================================
+      // ==========================================
+// ELIMINAR ÁLBUM/CANCIÓN - CORREGIDO
+// ==========================================
+function eliminarAlbum(id) {
+    if (!id) {
+        console.error('❌ ID no proporcionado para eliminar');
+        return;
+    }
+    
+    idAEliminar = id;
+    const album = albumes.find(a => a.id === id);
+    
+    const confirmMsg = document.getElementById('confirmMessage');
+    if (confirmMsg) {
+        confirmMsg.innerHTML = 
+            `¿Eliminar permanentemente<br><strong style="color: var(--fuxia);">${album?.title || 'este ÁLBUM/CANCIÓN'}</strong>?`;
+    }
+    
+    document.getElementById('confirmModal').classList.add('active');
+}
+
+// Configurar botón de confirmación UNA VEZ (mover fuera de cualquier función)
+document.addEventListener('DOMContentLoaded', function() {
+    const btnConfirmar = document.getElementById('btnConfirmarSi');
+    if (btnConfirmar) {
+        btnConfirmar.addEventListener('click', async function() {
+            console.log('🗑️ Confirmando eliminación de:', idAEliminar);
+            
+            if (!idAEliminar) {
+                console.error('❌ No hay ID para eliminar');
+                closeModal('confirmModal');
+                return;
+            }
+
+            if (!db) {
+                alert('❌ No hay conexión a la base de datos');
+                closeModal('confirmModal');
+                return;
+            }
+
+            const id = idAEliminar;
+            
+            try {
+                // Eliminar de Firebase
+                await db.ref('albums/' + id).remove();
+                console.log('✅ Eliminado de Firebase:', id);
+                
+                // Actualizar array local
+                albumes = albumes.filter(a => a.id !== id);
+                localStorage.setItem('IL Benedetto_albums_backup', JSON.stringify(albumes));
+                
+                idAEliminar = null;
+                closeModal('confirmModal');
+                
+                if (modoEliminar && albumes.length === 0) {
+                    desactivarModoEliminar();
+                }
+                
+                // No necesitas llamar renderAlbumes() aquí porque el listener lo hará
+                
+            } catch (e) {
+                console.error('❌ Error eliminando:', e);
+                if (e.message.includes('permission_denied') || e.message.includes('PERMISSION_DENIED')) {
+                    alert('❌ ERROR DE PERMISOS: No tienes permiso para eliminar en la base de datos.');
+                } else {
+                    alert('❌ Error al eliminar: ' + e.message);
+                }
+                idAEliminar = null;
+                closeModal('confirmModal');
+            }
+        });
+    }
+});
+
+        // ==========================================
+        // RENDERIZAR ÁLBUM/CANCIÓNES
+        // ==========================================
+        function renderAlbumes() {
+            const container = document.getElementById('albumes-container');
+            
+            if (albumes.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 60px 20px; grid-column: 1/-1;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🎵</div>
+                        <p style="font-size: 1.2rem;">No hay ÁLBUM/CANCIÓNes aún</p>
+                        ${isAdmin ? '' : ''}
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = albumes.map(album => {
+                const links = [];
+                
+                if (album.links?.spotify) {
+                    links.push(`<a href="${album.links.spotify}" target="_blank" class="btn-platform btn-spotify">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify"> Spotify
+                    </a>`);
+                }
+                if (album.links?.apple) {
+                    links.push(`<a href="${album.links.apple}" target="_blank" class="btn-platform btn-apple">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple"> Apple
+                    </a>`);
+                }
+                if (album.links?.soundcloud) {
+                    links.push(`<a href="${album.links.soundcloud}" target="_blank" class="btn-platform btn-soundcloud">
+                        <img src="https://static.vecteezy.com/system/resources/previews/024/693/498/original/soundcloud-logo-transparent-free-png.png" alt="SoundCloud"> SoundCloud
+                    </a>`);
+                }
+                if (album.links?.youtube) {
+                    links.push(`<a href="${album.links.youtube}" target="_blank" class="btn-platform btn-youtube">
+                        <img src="https://th.bing.com/th/id/R.b02b5d363a610229fe82e82ed0c369b4?rik=lECwiztO4NeaVA&pid=ImgRaw&r=0" alt="YouTube"> YouTube
+                    </a>`);
+                }
+                if (album.links?.audiomack) {
+                    links.push(`<a href="${album.links.audiomack}" target="_blank" class="btn-platform btn-audiomack">
+                        <img src="https://crystalpng.com/wp-content/uploads/2025/03/audiomack_logo.png" alt="Audiomack"> Audiomack
+                    </a>`);
+                }
+
+                // Botones de admin
+                const adminButtons = (isAdmin && !modoEliminar) ? `
+                    <div class="admin-btns">
+                        <button class="admin-btn edit" onclick="event.stopPropagation(); editarAlbum('${album.id}')" title="Editar">✏️</button>
+                        <button class="admin-btn delete" onclick="event.stopPropagation(); eliminarAlbum('${album.id}')" title="Eliminar">🗑️</button>
+                    </div>
+                ` : '';
+
+                // Overlay modo eliminar
+                const eliminarOverlay = modoEliminar ? `
+                    <div class="modo-eliminar-overlay" onclick="eliminarAlbum('${album.id}')">
+                        <span class="modo-eliminar-badge">🗑️ TOCAR PARA ELIMINAR</span>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="album-zaza ${modoEliminar ? 'modo-eliminar-activo' : ''}">
+                        ${eliminarOverlay}
+                        ${adminButtons}
+                        <div class="album-img-container">
+                            <img src="${album.image}" alt="${album.title}" class="album-img" 
+                                 onerror="this.src='https://i.ibb.co/Gv4Fw2NH/logobenedetto.jpg'">
+                            <div class="album-overlay"></div>
+                        </div>
+                        <div class="album-info">
+                            <h3 class="album-title">${album.title}</h3>
+                            <p class="album-desc">${album.description}</p>
+                            <div class="botones-zaza">
+                                ${links.length > 0 ? links.join('') : '<p style="color: #666; font-size: 0.9rem;">Disponible pronto en plataformas</p>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎵 IL Benedetto iniciado');
+            // Intentar cargar desde localStorage mientras Firebase conecta
+            usarDatosLocales();
+        });
+    </script>
+    <style>
+        /* ==========================================
+   IL BENEDETTO - TEMA FUEGO AZUL + CENIZAS
+   Basado en el logo: azul eléctrico, brasas
+   naranja/rojo, gris tierra agrietada
+   ========================================== */
+
+:root {
+    /* FUEGO AZUL - Color dominante del logo */
+    --fuxia: #1a6fff;
+    --fuxia-dark: #0a3fa8;
+
+    /* BRASAS - Naranja/rojo de las llamas base */
+    --verde: #e84a00;
+    --verde-glow: #ff6622;
+
+    /* CENIZAS CALIENTES - Detalles y acentos */
+    --amarillo: #c8a96e;
+    --amarillo-glow: #e8c88a;
+
+    /* FONDOS - Tierra oscura y grietas */
+    --negro: #0a0a0b;
+    --gris: #141416;
+
+    /* ESTADOS */
+    --danger: #cc2200;
+    --success: #1a5fff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--negro);
+    font-family: 'Poppins', sans-serif;
+    color: #d0cfc8;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ==========================================
+   FONDO - TIERRA AGRIETADA Y HUMO
+   ========================================== */
+.smoke-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.smoke {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(ellipse at 50% 100%, rgba(232, 74, 0, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 20% 0%, rgba(26, 111, 255, 0.12) 0%, transparent 45%),
+        radial-gradient(ellipse at 80% 10%, rgba(10, 63, 168, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 30% 75%, rgba(200, 80, 0, 0.12) 0%, transparent 30%),
+        radial-gradient(circle at 70% 85%, rgba(26, 111, 255, 0.08) 0%, transparent 30%);
+    animation: ashDrift 18s ease-in-out infinite;
+    filter: blur(50px);
+}
+
+.smoke:nth-child(2) {
+    animation-delay: -6s;
+    opacity: 0.6;
+    background:
+        radial-gradient(ellipse at 40% 100%, rgba(150, 40, 0, 0.2) 0%, transparent 60%),
+        radial-gradient(ellipse at 60% 0%, rgba(26, 111, 255, 0.1) 0%, transparent 50%);
+}
+
+.smoke:nth-child(3) {
+    animation-delay: -12s;
+    opacity: 0.35;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(200, 169, 110, 0.04) 0%, transparent 70%);
+}
+
+@keyframes ashDrift {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        filter: blur(50px);
+    }
+    33% {
+        transform: translateY(-25px) scale(1.04);
+        filter: blur(60px);
+    }
+    66% {
+        transform: translateY(12px) scale(0.97);
+        filter: blur(45px);
+    }
+}
+
+/* ==========================================
+   PARTÍCULAS - BRASAS FLOTANTES
+   ========================================== */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 25%;
+    animation: emberFloat 14s infinite;
+    opacity: 0.5;
+}
+
+.particle:nth-child(3n)   { background: #1a6fff; width: 2px; height: 2px; }
+.particle:nth-child(3n+1) { background: #e84a00; width: 3px; height: 3px; }
+.particle:nth-child(3n+2) { background: #c8a96e; width: 2px; height: 2px; animation-duration: 18s; }
+
+@keyframes emberFloat {
+    0%   { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+    8%   { opacity: 0.5; }
+    92%  { opacity: 0.3; }
+    100% { transform: translateY(-100vh) translateX(80px) rotate(540deg); opacity: 0; }
+}
+
+/* ==========================================
+   HEADER
+   ========================================== */
+.zaza-header {
+    text-align: center;
+    padding: 60px 20px 40px;
+    position: relative;
+    background:
+        linear-gradient(180deg, rgba(10, 63, 168, 0.12) 0%, transparent 50%),
+        linear-gradient(0deg, rgba(232, 74, 0, 0.14) 0%, transparent 60%);
+    border-bottom: 1px solid rgba(26, 111, 255, 0.3);
+    box-shadow:
+        0 8px 40px rgba(232, 74, 0, 0.15),
+        0 0 80px rgba(26, 111, 255, 0.08),
+        inset 0 -8px 40px rgba(232, 74, 0, 0.05);
+    overflow: hidden;
+}
+
+.zaza-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(26, 111, 255, 0.08),
+        rgba(232, 74, 0, 0.06),
+        transparent
+    );
+    animation: headerSweep 6s ease-in-out infinite;
+}
+
+@keyframes headerSweep {
+    0%   { left: -100%; }
+    60%  { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* ==========================================
+   LOGO
+   ========================================== */
+.logo-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.logo-container::before {
+    content: '';
+    position: absolute;
+    top: -12px; left: -12px; right: -12px; bottom: -12px;
+    background: conic-gradient(
+        from 0deg,
+        #e84a00,
+        #1a6fff,
+        #0a3fa8,
+        #e84a00,
+        #ff6622,
+        #1a6fff,
+        #e84a00
+    );
+    border-radius: 25%;
+    animation: logoRotate 4s linear infinite;
+    z-index: -1;
+    filter: blur(12px);
+    opacity: 0.75;
+}
+
+.logo-container::after {
+    content: '';
+    position: absolute;
+    top: -22px; left: -22px; right: -22px; bottom: -22px;
+    background: conic-gradient(
+        from 180deg,
+        #0a3fa8,
+        #1a6fff,
+        #e84a00,
+        #0a3fa8
+    );
+    border-radius: 25%;
+    animation: logoRotate 7s linear infinite reverse;
+    z-index: -2;
+    filter: blur(22px);
+    opacity: 0.35;
+}
+
+@keyframes logoRotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.logo-img {
+    width: 220px !important;
+    height: 220px !important;
+    border-radius: 25%;
+    object-fit: cover;
+    border: 3px solid rgba(200, 169, 110, 0.6);
+    box-shadow:
+        0 0 25px rgba(232, 74, 0, 0.5),
+        0 0 55px rgba(26, 111, 255, 0.35),
+        0 0 90px rgba(232, 74, 0, 0.15);
+    animation: logoPulse 3s ease-in-out infinite;
+    filter: contrast(1.05) saturate(1.1);
+}
+
+@keyframes logoPulse {
+    0%, 100% {
+        box-shadow:
+            0 0 25px rgba(232, 74, 0, 0.5),
+            0 0 55px rgba(26, 111, 255, 0.35);
+    }
+    50% {
+        box-shadow:
+            0 0 40px rgba(232, 74, 0, 0.7),
+            0 0 80px rgba(26, 111, 255, 0.5),
+            0 0 120px rgba(200, 169, 110, 0.2);
+    }
+}
+
+/* ==========================================
+   TÍTULO
+   ========================================== */
+.zaza-title {
+    font-size: 4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    background: linear-gradient(
+        90deg,
+        #e84a00 0%,
+        #ff6622 20%,
+        #1a6fff 45%,
+        #4d8fff 60%,
+        #1a6fff 75%,
+        #e84a00 100%
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: titleFlame 5s ease-in-out infinite;
+    margin-top: 20px;
+}
+
+@keyframes titleFlame {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.zaza-subtitle {
+    color: #5a8ae0;
+    font-size: 1.1rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    text-shadow: 0 0 20px rgba(26, 111, 255, 0.6);
+    opacity: 0.9;
+}
+
+.zaza-slogan {
+    color: #a08860;
+    font-size: 1rem;
+    font-style: italic;
+    margin-top: 12px;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+/* ==========================================
+   BOTÓN PRINCIPAL
+   ========================================== */
+.access-btn {
+    display: inline-block;
+    margin-top: 35px;
+    padding: 16px 45px;
+    background: linear-gradient(135deg, #1a3a80 0%, #0a1f50 100%);
+    color: #a0c0ff;
+    border: 1px solid rgba(26, 111, 255, 0.4);
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    cursor: pointer;
+    box-shadow:
+        0 0 20px rgba(26, 111, 255, 0.25),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.access-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    transition: left 0.5s;
+}
+
+.access-btn:hover::before { left: 100%; }
+
+.access-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 35px rgba(26, 111, 255, 0.45),
+        0 0 70px rgba(232, 74, 0, 0.15);
+    border-color: rgba(26, 111, 255, 0.7);
+    color: #c8dcff;
+}
+
+/* ==========================================
+   TARJETA DE PERFIL
+   ========================================== */
+.perfil-section {
+    display: flex;
+    justify-content: center;
+    margin: -60px auto 40px;
+    position: relative;
+    z-index: 10;
+}
+
+.perfil-card {
+    background: linear-gradient(135deg, #111216 0%, #0e1018 100%);
+    border: 1px solid rgba(26, 111, 255, 0.25);
+    border-radius: 20px;
+    padding: 25px;
+    width: 350px;
+    color: #d0cfc8;
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(26, 111, 255, 0.08),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+    backdrop-filter: blur(10px);
+    animation: fadeInUp 1s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.perfil-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    background: linear-gradient(135deg,
+        rgba(26, 111, 255, 0.2) 0%,
+        transparent 40%,
+        transparent 60%,
+        rgba(232, 74, 0, 0.1) 100%
+    );
+    border-radius: 20px;
+    z-index: -1;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.perfil-foto {
+    width: 70px;
+    height: 70px;
+    border-radius: 25%;
+    border: 2px solid rgba(26, 111, 255, 0.5);
+    object-fit: cover;
+    box-shadow: 0 0 15px rgba(26, 111, 255, 0.3);
+}
+
+.perfil-info { flex-grow: 1; margin-left: 15px; }
+
+.nombre {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #c8a96e;
+    letter-spacing: 0.5px;
+}
+
+.badge {
+    background: linear-gradient(90deg, #1a3a80, #0a3fa8);
+    color: #7aaeff;
+    font-size: 0.75em;
+    padding: 3px 9px;
+    border-radius: 6px;
+    margin-left: 8px;
+    font-weight: 700;
+    border: 1px solid rgba(26, 111, 255, 0.4);
+}
+
+.estado {
+    font-style: italic;
+    color: #5a8ae0;
+    margin-top: 4px;
+    font-size: 0.9rem;
+}
+
+.online-dot {
+    width: 12px;
+    height: 12px;
+    background: #1a6fff;
+    border-radius: 25%;
+    border: 2px solid #0a0a0b;
+    box-shadow: 0 0 8px rgba(26, 111, 255, 0.8);
+    animation: onlinePulse 2.5s infinite;
+}
+
+@keyframes onlinePulse {
+    0%   { box-shadow: 0 0 0 0 rgba(26, 111, 255, 0.6); }
+    70%  { box-shadow: 0 0 0 12px rgba(26, 111, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(26, 111, 255, 0); }
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.social-icons a {
+    width: 38px;
+    height: 38px;
+    border-radius: 25%;
+    background: rgba(26, 111, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(26, 111, 255, 0.25);
+    transition: all 0.3s;
+    color: #7aaeff;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.social-icons a:hover {
+    background: rgba(26, 111, 255, 0.2);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 0 18px rgba(26, 111, 255, 0.4);
+    border-color: rgba(26, 111, 255, 0.6);
+}
+
+/* ==========================================
+   TÍTULO DE SECCIÓN
+   ========================================== */
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #c8a96e;
+    margin: 40px 0 20px;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    opacity: 0.9;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #1a6fff, #e84a00, transparent);
+    margin: 12px auto;
+    border-radius: 1px;
+}
+
+/* ==========================================
+   GRID Y CARDS DE ÁLBUMES
+   ========================================== */
+#albumes-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    padding: 50px 20px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.album-zaza {
+    background: #0e1018;
+    border: 1px solid rgba(26, 111, 255, 0.15);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    animation: cardRise 0.5s ease;
+}
+
+.album-zaza::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    background: linear-gradient(
+        135deg,
+        rgba(26, 111, 255, 0.4),
+        rgba(232, 74, 0, 0.3),
+        rgba(26, 111, 255, 0.2)
+    );
+    border-radius: 16px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background-size: 200% 200%;
+}
+
+.album-zaza:hover::before { opacity: 1; }
+
+.album-zaza:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.7),
+        0 0 30px rgba(26, 111, 255, 0.2),
+        0 0 60px rgba(232, 74, 0, 0.1);
+    border-color: rgba(26, 111, 255, 0.3);
+}
+
+@keyframes cardRise {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.album-img-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+
+.album-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s;
+    filter: contrast(1.05) saturate(0.9) brightness(0.85);
+}
+
+.album-zaza:hover .album-img {
+    transform: scale(1.08);
+    filter: contrast(1.1) saturate(1.1) brightness(1.0);
+}
+
+.album-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(
+        to top,
+        rgba(10, 10, 11, 0.95) 0%,
+        rgba(26, 111, 255, 0.15) 60%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.album-zaza:hover .album-overlay { opacity: 1; }
+
+.album-info {
+    padding: 20px;
+    background: #0e1018;
+    border-top: 1px solid rgba(26, 111, 255, 0.12);
+    position: relative;
+}
+
+.album-info::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(232, 74, 0, 0.4), rgba(26, 111, 255, 0.4), transparent);
+}
+
+.album-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #c8a96e;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.album-desc {
+    color: #666672;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+/* ==========================================
+   BOTONES DE PLATAFORMAS
+   ========================================== */
+.botones-zaza {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    justify-content: center;
+}
+
+.btn-platform {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 13px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.82rem;
+    transition: all 0.25s;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-platform:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+}
+
+.btn-platform img {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) invert(1);
+}
+
+.btn-audiomack img { filter: none; }
+
+.btn-spotify    { background: #1a3d24; color: #4caf6f; border-color: rgba(76, 175, 111, 0.3); }
+.btn-spotify:hover { box-shadow: 0 0 18px rgba(29, 185, 84, 0.35); }
+
+.btn-apple      { background: #3d1a1a; color: #e06060; border-color: rgba(250, 36, 60, 0.3); }
+.btn-apple:hover { box-shadow: 0 0 18px rgba(250, 36, 60, 0.35); }
+
+.btn-soundcloud { background: #3d2a1a; color: #e08040; border-color: rgba(255, 85, 0, 0.3); }
+.btn-soundcloud:hover { box-shadow: 0 0 18px rgba(255, 85, 0, 0.35); }
+
+.btn-youtube    { background: #3d1a1a; color: #e05050; border-color: rgba(255, 0, 0, 0.3); }
+.btn-youtube:hover { box-shadow: 0 0 18px rgba(255, 0, 0, 0.35); }
+
+.btn-audiomack  { background: #3d2e10; color: #c89030; border-color: rgba(255, 162, 0, 0.3); }
+.btn-audiomack:hover { box-shadow: 0 0 18px rgba(255, 162, 0, 0.35); }
+
+/* ==========================================
+   ADMIN BUTTONS EN CARDS
+   ========================================== */
+.admin-btns {
+    position: absolute;
+    top: 10px; right: 10px;
+    display: flex;
+    gap: 7px;
+    z-index: 10;
+}
+
+.admin-btn {
+    width: 36px; height: 36px;
+    border: none;
+    border-radius: 25%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s;
+}
+
+.admin-btn.edit   { background: #1a3a80; color: #7aaeff; }
+.admin-btn.edit:hover  { box-shadow: 0 0 15px rgba(26, 111, 255, 0.5); }
+
+.admin-btn.delete { background: #5a1a1a; color: #e06060; }
+.admin-btn.delete:hover { box-shadow: 0 0 15px rgba(204, 34, 0, 0.5); }
+
+/* ==========================================
+   MODO ELIMINAR
+   ========================================== */
+.modo-eliminar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(204, 34, 0, 0.25);
+    z-index: 5;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.modo-eliminar-activo .modo-eliminar-overlay { display: flex; }
+
+.modo-eliminar-badge {
+    background: rgba(90, 0, 0, 0.9);
+    color: #ff9090;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: 1px solid rgba(204, 34, 0, 0.5);
+}
+
+.modo-eliminar-banner {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(90deg, #3d0000, #5a0000, #3d0000);
+    color: #ff9090;
+    text-align: center;
+    padding: 13px;
+    z-index: 9999;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(204, 34, 0, 0.4);
+    display: none;
+    letter-spacing: 1px;
+}
+
+.modo-eliminar-banner.active { display: block; }
+
+.modo-eliminar-banner button {
+    margin-left: 12px;
+    padding: 6px 16px;
+    border: 1px solid rgba(204, 34, 0, 0.5);
+    background: transparent;
+    color: #ff9090;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.modo-eliminar-banner button:hover {
+    background: rgba(204, 34, 0, 0.3);
+}
+
+/* ==========================================
+   MODALES
+   ========================================== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    animation: modalFadeIn 0.25s ease;
+}
+
+.modal-overlay.active { display: flex; }
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.modal-content {
+    background: linear-gradient(160deg, #111216 0%, #0d0f14 100%);
+    border: 1px solid rgba(26, 111, 255, 0.2);
+    border-radius: 18px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow:
+        0 0 60px rgba(26, 111, 255, 0.15),
+        0 30px 80px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+    position: relative;
+    animation: modalSlideUp 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@keyframes modalSlideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+
+.modal-title {
+    font-size: 1.7rem;
+    color: #c8a96e;
+    text-align: center;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 700;
+    position: relative;
+}
+
+.modal-title::after {
+    content: '';
+    display: block;
+    width: 50px; height: 2px;
+    background: linear-gradient(90deg, #e84a00, #1a6fff);
+    margin: 12px auto 0;
+    border-radius: 1px;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px; right: 18px;
+    font-size: 1.6rem;
+    color: #444458;
+    cursor: pointer;
+    transition: all 0.25s;
+    width: 36px; height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25%;
+    z-index: 10;
+}
+
+.close-modal:hover {
+    color: #7aaeff;
+    transform: rotate(90deg);
+    background: rgba(26, 111, 255, 0.1);
+}
+
+/* ==========================================
+   INPUTS
+   ========================================== */
+.zaza-input {
+    width: 100%;
+    padding: 13px 18px;
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(26, 111, 255, 0.2);
+    border-radius: 10px;
+    color: #c8c8d0;
+    font-size: 0.95rem;
+    transition: all 0.25s;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.zaza-input:focus {
+    border-color: rgba(26, 111, 255, 0.5);
+    box-shadow: 0 0 20px rgba(26, 111, 255, 0.12);
+    background: rgba(26, 111, 255, 0.04);
+}
+
+.zaza-input::placeholder { color: rgba(255, 255, 255, 0.2); }
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+.zaza-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #1a3a80 0%, #0a2555 100%);
+    color: #7aaeff;
+    border: 1px solid rgba(26, 111, 255, 0.35);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 0 20px rgba(26, 111, 255, 0.12);
+    font-family: 'Poppins', sans-serif;
+}
+
+.zaza-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(26, 111, 255, 0.3);
+    border-color: rgba(26, 111, 255, 0.6);
+    color: #c0d8ff;
+}
+
+.zaza-btn:disabled {
+    background: #1a1a22;
+    color: #3a3a48;
+    cursor: not-allowed;
+    box-shadow: none;
+    border-color: rgba(255,255,255,0.05);
+    transform: none;
+}
+
+.zaza-btn-secondary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #3d1a00 0%, #280f00 100%);
+    color: #c07040;
+    border: 1px solid rgba(232, 74, 0, 0.3);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 0 20px rgba(232, 74, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+    margin-top: 12px;
+}
+
+.zaza-btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(232, 74, 0, 0.25);
+    border-color: rgba(232, 74, 0, 0.5);
+    color: #e09060;
+}
+
+.zaza-btn-danger {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #4a0a0a 0%, #300000 100%);
+    color: #e06060;
+    border: 1px solid rgba(204, 34, 0, 0.3);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.25s;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 12px;
+}
+
+.zaza-btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(204, 34, 0, 0.3);
+    border-color: rgba(204, 34, 0, 0.55);
+    color: #ff9090;
+}
+
+/* ==========================================
+   FORMULARIO - FILE INPUT
+   ========================================== */
+.form-grid { display: grid; gap: 12px; }
+
+.file-label {
+    display: block;
+    padding: 18px;
+    background: rgba(26, 111, 255, 0.04);
+    border: 1px dashed rgba(26, 111, 255, 0.3);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    color: #5a7acc;
+    font-weight: 600;
+}
+
+.file-label:hover {
+    background: rgba(26, 111, 255, 0.08);
+    border-color: rgba(26, 111, 255, 0.5);
+    color: #7aaeff;
+}
+
+.preview-img {
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: none;
+    border: 1px solid rgba(26, 111, 255, 0.3);
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    color: #5a8ae0;
+    margin-top: 16px;
+    font-weight: 600;
+}
+
+.loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(26, 111, 255, 0.3);
+    border-top-color: #1a6fff;
+    border-radius: 25%;
+    margin-left: 8px;
+    animation: spin 0.9s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.success-msg {
+    display: none;
+    text-align: center;
+    color: #5a8ae0;
+    margin-top: 16px;
+    font-weight: 700;
+}
+
+.error-msg {
+    color: #cc5555;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+    font-weight: 600;
+    animation: shake 0.4s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-8px); }
+    75%       { transform: translateX(8px); }
+}
+
+/* ==========================================
+   ERROR Y ESTADO VACÍO
+   ========================================== */
+.error-container {
+    text-align: center;
+    color: #cc5555;
+    padding: 40px;
+    grid-column: 1/-1;
+    background: rgba(204, 34, 0, 0.06);
+    border: 1px solid rgba(204, 34, 0, 0.2);
+    border-radius: 12px;
+    margin: 20px;
+}
+
+.error-container button {
+    margin-top: 15px;
+    padding: 10px 24px;
+    background: rgba(26, 111, 255, 0.15);
+    color: #7aaeff;
+    border: 1px solid rgba(26, 111, 255, 0.3);
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* ==========================================
+   DEBUG INFO
+   ========================================== */
+.debug-info {
+    position: fixed;
+    bottom: 10px; right: 10px;
+    background: rgba(10, 10, 11, 0.9);
+    color: #5a8ae0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: monospace;
+    border: 1px solid rgba(26, 111, 255, 0.15);
+    max-width: 240px;
+    z-index: 9999;
+}
+
+/* ==========================================
+   REPRODUCTOR
+   ========================================== */
+.player-section { text-align: center; margin: 30px 20px; }
+
+.player-title {
+    color: #c8a96e;
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+.zaza-player {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(26, 111, 255, 0.06);
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid rgba(26, 111, 255, 0.18);
+    box-shadow: 0 0 40px rgba(26, 111, 255, 0.08);
+}
+
+.player-container {
+    position: relative;
+    display: inline-block;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 400px;
+    height: 225px;
+    background: #000;
+    border: 1px solid rgba(26, 111, 255, 0.15);
+}
+
+.player-bar {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    background: rgba(10, 10, 11, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    z-index: 2;
+    border-bottom: 1px solid rgba(26, 111, 255, 0.25);
+}
+
+.player-artist-img {
+    width: 32px; height: 32px;
+    border-radius: 25%;
+    border: 1px solid rgba(26, 111, 255, 0.4);
+    position: absolute;
+    left: 14px;
+}
+
+.player-song-title {
+    color: #c8c8d0;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 38px;
+}
+
+.player-thumb {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+    filter: saturate(0.7);
+}
+
+.play-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #1a3a80, #0a2555);
+    color: #7aaeff;
+    font-size: 26px;
+    width: 72px; height: 72px;
+    border: 2px solid rgba(200, 169, 110, 0.4);
+    border-radius: 25%;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(26, 111, 255, 0.4);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.play-btn:hover {
+    transform: translate(-50%, -50%) scale(1.08);
+    background: linear-gradient(135deg, #3d1a00, #280f00);
+    color: #e09060;
+    box-shadow: 0 0 40px rgba(232, 74, 0, 0.5);
+    border-color: rgba(232, 74, 0, 0.5);
+}
+
+/* ==========================================
+   SECCIÓN DE VIDEO
+   ========================================== */
+.zaza-video-section {
+    text-align: center;
+    margin: 35px 20px;
+    padding: 35px 20px;
+    background: rgba(26, 111, 255, 0.04);
+    border-radius: 24px;
+    border: 1px solid rgba(26, 111, 255, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.video-title {
+    color: #c8a96e;
+    font-size: 1.8rem;
+    margin-bottom: 22px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+.video-container {
+    position: relative;
+    max-width: 200px;
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.8),
+        0 0 35px rgba(26, 111, 255, 0.2);
+    border: 2px solid rgba(26, 111, 255, 0.2);
+}
+
+.zaza-play-btn {
+    width: 90px; height: 90px;
+    border-radius: 25%;
+    background: linear-gradient(135deg, #1a3a80, #0a2555);
+    border: 3px solid rgba(200, 169, 110, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 0 25px rgba(26, 111, 255, 0.45),
+        0 0 50px rgba(26, 111, 255, 0.2);
+    transition: all 0.3s;
+    animation: playPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes playPulse {
+    0%, 100% { box-shadow: 0 0 25px rgba(26, 111, 255, 0.45); }
+    50%       { box-shadow: 0 0 45px rgba(26, 111, 255, 0.7), 0 0 80px rgba(232, 74, 0, 0.2); }
+}
+
+.zaza-play-btn:hover {
+    transform: scale(1.12);
+    background: linear-gradient(135deg, #3d1a00, #280f00);
+    box-shadow: 0 0 50px rgba(232, 74, 0, 0.55);
+    border-color: rgba(232, 74, 0, 0.5);
+}
+
+.play-icon {
+    font-size: 2.2rem;
+    color: #7aaeff;
+    margin-left: 4px;
+    transition: color 0.3s;
+}
+
+.zaza-play-btn:hover .play-icon { color: #e09060; }
+
+.video-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    backdrop-filter: blur(1px);
+}
+
+.video-overlay.hidden { opacity: 0; pointer-events: none; }
+
+.video-controls {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+    padding: 25px 15px 15px;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+}
+
+.video-container:hover .video-controls { transform: translateY(0); }
+
+.progress-container {
+    width: 100%; height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #e84a00, #1a6fff);
+    border-radius: 2px;
+    width: 0%;
+}
+
+.progress-handle {
+    position: absolute;
+    top: 50%;
+    width: 12px; height: 12px;
+    background: #c8a96e;
+    border-radius: 25%;
+    transform: translate(-50%, -50%) scale(0);
+    left: 0%;
+    transition: transform 0.2s;
+}
+
+.progress-container:hover .progress-handle { transform: translate(-50%, -50%) scale(1); }
+
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    color: #5a8ae0;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.time-display { color: #5a8ae0; }
+
+/* ==========================================
+   SCROLLBAR
+   ========================================== */
+::-webkit-scrollbar { width: 10px; }
+
+::-webkit-scrollbar-track { background: var(--negro); }
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #1a3a80, #3d1a00, #1a3a80);
+    border-radius: 5px;
+    border: 2px solid var(--negro);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #1a6fff, #e84a00, #1a6fff);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 1200px) {
+    #albumes-container { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+    #albumes-container { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .zaza-title      { font-size: 2.4rem; letter-spacing: 4px; }
+    .logo-img        { width: 140px; height: 140px; }
+    .perfil-card     { width: 90%; max-width: 350px; }
+    .player-container { width: 90%; max-width: 400px; height: 200px; }
+    .modal-content   { padding: 28px 18px; width: 95%; }
+    
+    #albumes-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        padding: 30px 12px;
+    }
+    
+    .album-title  { font-size: 1rem; }
+    .album-desc   { font-size: 0.8rem; }
+    .zaza-play-btn { width: 72px; height: 72px; }
+    .play-icon    { font-size: 1.8rem; }
+    .video-title  { font-size: 1.4rem; }
+}
+
+@media (max-width: 480px) {
+    #albumes-container { grid-template-columns: 1fr; }
+    .zaza-play-btn { width: 58px; height: 58px; }
+    .play-icon    { font-size: 1.4rem; }
+    .access-btn   { padding: 14px 30px; font-size: 0.95rem; }
+}
+    </style>
+</body>
+</html>
