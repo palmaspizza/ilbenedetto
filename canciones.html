@@ -1212,7 +1212,23 @@
     </style>
 </head>
 <body>
+<script>
+    // Bloquear menú contextual global en móvil
+document.addEventListener('contextmenu', function(e) {
+    // Solo bloquear en móvil/tablet
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        e.preventDefault();
+        return false;
+    }
+}, false);
 
+// Prevenir comportamientos táctiles no deseados
+document.addEventListener('touchstart', function(e) {
+    if (e.target.closest('.logo-container')) {
+        e.preventDefault();
+    }
+}, { passive: false, capture: true });
+</script>
     <!-- Banner modo eliminar -->
      <div id="modoEliminarBanner" class="modo-eliminar-activo" style="display: none;">
     🗑️ MODO ELIMINAR ACTIVO - Toca un producto para eliminarlo
@@ -5242,6 +5258,38 @@ body {
     .play-icon    { font-size: 1.4rem; }
     .access-btn   { padding: 14px 30px; font-size: 0.95rem; }
 }
-    </style>
+   /* ==========================================
+   PREVENIR MENÚ CONTEXTUAL EN MÓVIL
+   ========================================== */
+
+.logo-container {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation;
+    cursor: pointer;
+}
+
+.logo-container img {
+    pointer-events: none !important;
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
+/* Deshabilitar menú contextual en toda la página si es necesario */
+.no-context-menu {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* Feedback visual al presionar */
+.logo-container:active {
+    transform: scale(0.95);
+    filter: brightness(1.2);
+} </style>
 </body>
 </html>
